@@ -62,16 +62,19 @@ Password: password123
 | Encrypted in transit? | N/A |
 | User can delete data? | Yes — Log out |
 
-## Screenshots
+## Privacy policy URL
 
-Use files in `assets/store/`:
+```
+https://husky1711.github.io/welcome-app/
+```
 
-1. `01-login-screen.png` — Login screen
-2. `02-welcome-screen.png` — Welcome screen after sign-in
+Enable GitHub Pages from the `main` branch `/docs` folder — see `docs/GITHUB_PAGES_SETUP.md`.
 
-## Still needed before upload
+## Store listing assets
 
-- [ ] 512×512 app icon (export from `src/assets/logo.svg`)
-- [ ] 1024×500 feature graphic
-- [ ] Privacy policy hosted at a public URL (see `docs/privacy-policy.html`)
-- [ ] Signed release AAB (`android/app/build/outputs/bundle/release/`)
+| Asset | File |
+|-------|------|
+| App icon (512×512) | `assets/store/app-icon-512.png` |
+| Feature graphic (1024×500) | `assets/store/feature-graphic-1024x500.png` |
+| Screenshot 1 — Login | `assets/store/01-login-screen.png` |
+| Screenshot 2 — Welcome | `assets/store/02-welcome-screen.png` |

@@ -4,10 +4,10 @@ Follow these steps in order. Check each box as you complete it.
 
 ## Phase A — Assets (today)
 
-- [ ] **Screenshots** — Use `assets/store/01-login-screen.png` and `02-welcome-screen.png`
-- [ ] **App icon** — 512×512 PNG (create in Android Studio → Image Asset from logo)
-- [ ] **Feature graphic** — 1024×500 PNG banner
-- [ ] **Privacy policy URL** — Host `docs/privacy-policy.html` (GitHub Pages, Netlify, etc.)
+- [x] **Screenshots** — `assets/store/01-login-screen.png`, `02-welcome-screen.png`
+- [x] **App icon** — `assets/store/app-icon-512.png`
+- [x] **Feature graphic** — `assets/store/feature-graphic-1024x500.png`
+- [ ] **Privacy policy URL live** — Enable GitHub Pages (see `docs/GITHUB_PAGES_SETUP.md`)
 
 ## Phase B — Signed release build
 

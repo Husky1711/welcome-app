@@ -61,15 +61,11 @@ npx cap open android
 
 In Android Studio, run the app on an emulator or connected device.
 
-## Play Store checklist
+## Play Store
 
-1. Create app in [Google Play Console](https://play.google.com/console)
-2. Package ID: `com.rupa.welcomeapp` (already set — cannot change after first upload)
-3. Generate signed release AAB in Android Studio
-4. Prepare: app icon, screenshots, feature graphic, privacy policy URL
-5. Complete content rating and Data safety form
-6. For **new personal accounts**: closed test with 12 testers for 14 days before production
-7. Provide review credentials: `admin@example.com` / `password123`
+Full walkthrough: `docs/PLAY_CONSOLE_GUIDE.md`
+
+Privacy policy URL: `https://husky1711.github.io/welcome-app/` (enable Pages first — `docs/GITHUB_PAGES_SETUP.md`)
 
 ## Project structure
 
