@@ -10,6 +10,7 @@ import {
 import { Alert } from '../ui/Alert'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
+import { PasswordInput } from '../ui/PasswordInput'
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -55,10 +56,9 @@ export function LoginForm() {
         onChange={(event) => setEmail(event.target.value)}
       />
 
-      <Input
+      <PasswordInput
         label="Password"
         name="password"
-        type="password"
         autoComplete="current-password"
         value={password}
         disabled={isLoading}

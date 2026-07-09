@@ -6,8 +6,8 @@ interface AlertProps {
 }
 
 const variantClasses: Record<AlertVariant, string> = {
-  error: 'border-error/20 bg-red-50 text-error',
-  success: 'border-success/20 bg-green-50 text-success',
+  error: 'border-error/20 bg-red-50 text-error dark:bg-red-950/30',
+  success: 'border-success/20 bg-green-50 text-success dark:bg-green-950/30',
 }
 
 export function Alert({ variant = 'error', children }: AlertProps) {

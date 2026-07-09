@@ -4,7 +4,7 @@ Follow these steps in order. Check each box as you complete it.
 
 ## Phase A — Assets (today)
 
-- [x] **Screenshots** — `assets/store/01-login-screen.png`, `02-welcome-screen.png`
+- [x] **Screenshots** — `assets/store/01-login-screen.png` through `05-settings-screen.png`
 - [x] **App icon** — `assets/store/app-icon-512.png`
 - [x] **Feature graphic** — `assets/store/feature-graphic-1024x500.png`
 - [ ] **Privacy policy URL live** — Enable GitHub Pages (see `docs/GITHUB_PAGES_SETUP.md`)

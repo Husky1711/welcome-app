@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
 import { LoginPage } from '../pages/LoginPage'
+import { NotesPage } from '../pages/NotesPage'
+import { ProfilePage } from '../pages/ProfilePage'
+import { SettingsPage } from '../pages/SettingsPage'
 import { WelcomePage } from '../pages/WelcomePage'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PublicRoute } from './PublicRoute'
@@ -14,6 +17,9 @@ export function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route path={ROUTES.WELCOME} element={<WelcomePage />} />
+        <Route path={ROUTES.NOTES} element={<NotesPage />} />
+        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />

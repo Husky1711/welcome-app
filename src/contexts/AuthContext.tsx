@@ -10,6 +10,7 @@ import { mockAuthService } from '../services/auth/mockAuthService'
 import type { IAuthService } from '../services/auth/IAuthService'
 import type { AuthState, LoginCredentials, User } from '../types/auth'
 import { AuthError } from '../types/auth'
+import { setStoredUser } from '../utils/storage'
 
 type AuthAction =
   | { type: 'HYDRATE_START' }
@@ -18,6 +19,7 @@ type AuthAction =
   | { type: 'LOGIN_SUCCESS'; user: User }
   | { type: 'LOGIN_ERROR'; error: string }
   | { type: 'LOGOUT_SUCCESS' }
+  | { type: 'UPDATE_PROFILE'; user: User }
   | { type: 'CLEAR_ERROR' }
 
 const initialState: AuthState = {
@@ -46,6 +48,12 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return { ...state, status: 'error', error: action.error }
     case 'LOGOUT_SUCCESS':
       return { user: null, status: 'idle', error: null }
+    case 'UPDATE_PROFILE':
+      return {
+        user: action.user,
+        status: 'authenticated',
+        error: null,
+      }
     case 'CLEAR_ERROR':
       return { ...state, status: 'idle', error: null }
     default:
@@ -56,6 +64,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 export interface AuthContextValue extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>
   logout: () => Promise<void>
+  updateProfile: (displayName: string) => void
   clearError: () => void
   isAuthenticated: boolean
 }
@@ -102,6 +111,21 @@ export function AuthProvider({
     dispatch({ type: 'LOGOUT_SUCCESS' })
   }, [authService])
 
+  const updateProfile = useCallback((displayName: string) => {
+    if (!state.user) return
+
+    const trimmed = displayName.trim()
+    if (!trimmed) return
+
+    const user: User = {
+      ...state.user,
+      displayName: trimmed,
+    }
+
+    setStoredUser(user)
+    dispatch({ type: 'UPDATE_PROFILE', user })
+  }, [state.user])
+
   const clearError = useCallback(() => {
     dispatch({ type: 'CLEAR_ERROR' })
   }, [])
@@ -111,10 +135,11 @@ export function AuthProvider({
       ...state,
       login,
       logout,
+      updateProfile,
       clearError,
       isAuthenticated: state.status === 'authenticated' && state.user !== null,
     }),
-    [state, login, logout, clearError],
+    [state, login, logout, updateProfile, clearError],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

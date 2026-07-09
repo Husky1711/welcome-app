@@ -10,7 +10,11 @@
     "bundle:release": "npm run build:android && cd android && gradlew.bat bundleRelease",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:qa": "playwright test e2e/senior-qa.spec.ts --headed",
+    "screenshots": "playwright test e2e/capture-screenshots.spec.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.1",
@@ -25,6 +29,7 @@
     "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

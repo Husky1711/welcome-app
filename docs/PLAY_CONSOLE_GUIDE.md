@@ -26,7 +26,10 @@ Enable GitHub Pages first — see `docs/GITHUB_PAGES_SETUP.md`.
 | App icon (512×512) | `assets/store/app-icon-512.png` |
 | Feature graphic (1024×500) | `assets/store/feature-graphic-1024x500.png` |
 | Screenshot 1 | `assets/store/01-login-screen.png` |
-| Screenshot 2 | `assets/store/02-welcome-screen.png` |
+| Screenshot 2 | `assets/store/02-dashboard.png` |
+| Screenshot 3 | `assets/store/03-notes-screen.png` |
+| Screenshot 4 | `assets/store/04-profile-screen.png` |
+| Screenshot 5 | `assets/store/05-settings-screen.png` |
 
 Copy text from `docs/play-store-listing.md`.
 
@@ -40,7 +43,7 @@ Password: password123
 ## Data safety (Phase 1)
 
 - **Data collected and transmitted?** No
-- **Data stored on device?** Yes — email for session (app functionality)
+- **Data stored on device?** Yes — email for session, notes, and app settings (app functionality)
 - **Encrypted in transit?** N/A
 - **User can request deletion?** Yes — logout or uninstall
 

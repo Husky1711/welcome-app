@@ -12,44 +12,48 @@
 ## Short description (80 chars max)
 
 ```
-Sign in and see your personalized welcome screen. Simple and clean.
+Your personal space — sign in, save private notes, and manage your profile.
 ```
 
 ## Full description
 
 ```
-Welcome App is a simple, modern Android app that demonstrates a complete sign-in experience.
+Welcome App is a lightweight personal space for Android. Sign in once and access your private dashboard on your device.
 
 Features:
-• Clean login screen with email and password
-• Personalized welcome screen after sign-in
-• Secure session — stay logged in until you log out
-• Material-inspired design built for mobile
+• Secure sign-in with a personalized welcome screen
+• Private notes — create, edit, and delete notes stored locally on your device
+• Profile — update your display name
+• Settings — light/dark theme, privacy policy, and data controls
+• Clean, modern design built for mobile
 
-Perfect for learning how web apps become real Android apps on Google Play.
+All notes and session data stay on your device. No account server required.
 
 Reviewer test account:
 Email: admin@example.com
 Password: password123
 ```
 
-## Release notes (v1.0.0)
+## Release notes (v1.2.0)
 
 ```
-Initial release:
-• Login screen
-• Welcome screen with user greeting
-• Logout support
+What's new:
+• Delete confirmation before removing notes
+• Show/hide password toggle on login
+• Improved confirmation dialogs for data actions
+• Personal dashboard with notes, profile, and settings
 ```
 
 ## Reviewer instructions (Play Console → App content → App access)
 
 ```
-All functionality is available without special access.
+All functionality is available after sign-in.
 
 Test credentials:
 Email: admin@example.com
 Password: password123
+
+Flow: Login → Dashboard → try Notes, Profile, or Settings → Logout.
 ```
 
 ## Data safety (Phase 1 — mock auth)
@@ -57,7 +61,7 @@ Password: password123
 | Question | Answer |
 |----------|--------|
 | Collect/transmit data off-device? | No |
-| Store data locally? | Yes — email for session only |
+| Store data on device? | Yes — email for session, notes, and settings |
 | Purpose | App functionality |
 | Encrypted in transit? | N/A |
 | User can delete data? | Yes — Log out |
@@ -77,4 +81,7 @@ Enable GitHub Pages from the `main` branch `/docs` folder — see `docs/GITHUB_P
 | App icon (512×512) | `assets/store/app-icon-512.png` |
 | Feature graphic (1024×500) | `assets/store/feature-graphic-1024x500.png` |
 | Screenshot 1 — Login | `assets/store/01-login-screen.png` |
-| Screenshot 2 — Welcome | `assets/store/02-welcome-screen.png` |
+| Screenshot 2 — Dashboard | `assets/store/02-dashboard.png` |
+| Screenshot 3 — Notes | `assets/store/03-notes-screen.png` |
+| Screenshot 4 — Profile | `assets/store/04-profile-screen.png` |
+| Screenshot 5 — Settings | `assets/store/05-settings-screen.png` |

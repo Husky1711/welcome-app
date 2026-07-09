@@ -24,7 +24,10 @@ npm run dev
 Open `http://localhost:5173` and use the routes:
 
 - `/#/` — Login
-- `/#/welcome` — Welcome (protected)
+- `/#/welcome` — Dashboard (protected)
+- `/#/notes` — Private notes (protected)
+- `/#/profile` — Profile (protected)
+- `/#/settings` — Settings (protected)
 
 ## Scripts
 

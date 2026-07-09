@@ -10,11 +10,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="rounded-lg bg-surface p-8 shadow-md">
+        <div className="rounded-lg bg-surface p-8 shadow-md dark:shadow-none">
           <header className="mb-6 text-center">
-            <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{title}</h1>
             {subtitle ? (
-              <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
             ) : null}
           </header>
           {children}
