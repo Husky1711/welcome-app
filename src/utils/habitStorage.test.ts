@@ -5,12 +5,14 @@ import {
   archiveHabit,
   clearStoredHabits,
   getActiveHabits,
+  getArchivedHabits,
   isHabitCompletedOnDate,
   setHabitCompleted,
   toggleHabitCompleted,
+  updateHabit,
 } from './habitStorage'
-import { getCurrentStreak, getDayProgress } from './habitStats'
-import { formatLocalDate } from './dateUtils'
+import { getCurrentStreak, getDayProgress, getDayStatus } from './habitStats'
+import { addDaysToDate, canEditHabitDate, formatLocalDate } from './dateUtils'
 
 describe('habitStorage', () => {
   beforeEach(() => {
@@ -31,6 +33,15 @@ describe('habitStorage', () => {
     archiveHabit(habit.id)
 
     expect(getActiveHabits()).toHaveLength(0)
+    expect(getArchivedHabits()).toHaveLength(1)
+  })
+
+  it('updates an active habit', () => {
+    const habit = addHabit({ title: 'Walk', icon: '🏃' })
+    const updated = updateHabit(habit.id, { title: 'Morning walk', icon: '🌅' })
+
+    expect(updated?.title).toBe('Morning walk')
+    expect(getActiveHabits()[0].icon).toBe('🌅')
   })
 
   it('toggles completion for a date', () => {
@@ -91,5 +102,27 @@ describe('habitStats', () => {
     setHabitCompleted(habit.id, today, true)
 
     expect(getCurrentStreak(habit.id, today)).toBe(1)
+  })
+
+  it('reports day status for calendar dots', () => {
+    const habit = addHabit({ title: 'Daily', icon: '🔥' })
+    const today = formatLocalDate()
+
+    expect(getDayStatus(today)).toBe('none')
+
+    setHabitCompleted(habit.id, today, true)
+    expect(getDayStatus(today)).toBe('full')
+  })
+})
+
+describe('dateUtils', () => {
+  it('allows editing within the past 7 days only', () => {
+    const today = formatLocalDate()
+    const sevenDaysAgo = addDaysToDate(today, -7)
+    const eightDaysAgo = addDaysToDate(today, -8)
+
+    expect(canEditHabitDate(today)).toBe(true)
+    expect(canEditHabitDate(sevenDaysAgo)).toBe(true)
+    expect(canEditHabitDate(eightDaysAgo)).toBe(false)
   })
 })

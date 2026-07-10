@@ -73,7 +73,15 @@ test.describe('Senior QA — Authentication', () => {
   })
 
   test('all protected routes redirect to login when logged out', async ({ page }) => {
-    const protectedRoutes = ['/#/welcome', '/#/today', '/#/notes', '/#/profile', '/#/settings']
+    const protectedRoutes = [
+      '/#/welcome',
+      '/#/today',
+      '/#/calendar',
+      '/#/habits',
+      '/#/notes',
+      '/#/profile',
+      '/#/settings',
+    ]
 
     for (const route of protectedRoutes) {
       await page.goto(route)

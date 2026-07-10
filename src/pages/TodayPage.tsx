@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TrackerNav } from '../components/habits/TrackerNav'
 import { ProgressRing } from '../components/habits/ProgressRing'
 import { TodayHabitList } from '../components/habits/TodayHabitList'
 import { ROUTES } from '../constants/routes'
@@ -26,6 +27,8 @@ export function TodayPage() {
   return (
     <AppLayout title="Today" backTo={ROUTES.WELCOME} align="top">
       <div className="space-y-6">
+        <TrackerNav />
+
         <header className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">{formatDisplayDate()}</p>
         </header>

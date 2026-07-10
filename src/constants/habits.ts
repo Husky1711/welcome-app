@@ -1,6 +1,20 @@
 import type { HabitSuggestion } from '../types/habit'
 
 export const MAX_HABITS = 8
+export const PAST_EDIT_DAYS = 7
+
+export const HABIT_ICON_OPTIONS = [
+  '✅',
+  '🧘',
+  '💪',
+  '📖',
+  '💧',
+  '🏃',
+  '😴',
+  '🍎',
+  '📝',
+  '🎯',
+] as const
 
 export const DEFAULT_HABIT_SUGGESTIONS: HabitSuggestion[] = [
   { icon: '🧘', title: 'Meditate 10 min' },

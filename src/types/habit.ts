@@ -29,6 +29,8 @@ export interface DayProgress {
   percent: number
 }
 
+export type DayStatus = 'none' | 'partial' | 'full' | 'empty'
+
 export interface HabitSuggestion {
   title: string
   icon: string

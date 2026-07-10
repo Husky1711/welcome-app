@@ -94,6 +94,28 @@ export function archiveHabit(id: string): boolean {
   return true
 }
 
+export function updateHabit(id: string, input: HabitInput): Habit | null {
+  const habits = getStoredHabitsRaw()
+  const index = habits.findIndex((habit) => habit.id === id)
+  if (index === -1 || habits[index].isArchived) return null
+
+  const updated: Habit = {
+    ...habits[index],
+    title: input.title.trim(),
+    icon: input.icon.trim() || '✅',
+  }
+
+  habits[index] = updated
+  saveHabits(habits)
+  return updated
+}
+
+export function getArchivedHabits(): Habit[] {
+  return getStoredHabitsRaw()
+    .filter((habit) => habit.isArchived)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
 export function getLogsForDate(date: string): HabitLog[] {
   return getStoredLogsRaw().filter((log) => log.date === date && log.completed)
 }

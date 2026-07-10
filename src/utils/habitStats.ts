@@ -1,4 +1,4 @@
-import type { DayProgress } from '../types/habit'
+import type { DayProgress, DayStatus } from '../types/habit'
 import { addDaysToDate, formatLocalDate } from './dateUtils'
 import {
   getActiveHabits,
@@ -31,4 +31,29 @@ export function getCurrentStreak(habitId: string, date: string = formatLocalDate
   }
 
   return streak
+}
+
+export function getDayStatus(date: string): DayStatus {
+  const habits = getActiveHabits()
+  if (habits.length === 0) return 'empty'
+
+  const progress = getDayProgress(date)
+  if (progress.completed === 0) return 'none'
+  if (progress.completed === progress.total) return 'full'
+  return 'partial'
+}
+
+export function getMonthDayStatuses(
+  year: number,
+  month: number,
+): Map<string, DayStatus> {
+  const statuses = new Map<string, DayStatus>()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = formatLocalDate(new Date(year, month, day))
+    statuses.set(date, getDayStatus(date))
+  }
+
+  return statuses
 }
