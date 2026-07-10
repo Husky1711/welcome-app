@@ -38,10 +38,29 @@ describe('habitStorage', () => {
 
   it('updates an active habit', () => {
     const habit = addHabit({ title: 'Walk', icon: '🏃' })
-    const updated = updateHabit(habit.id, { title: 'Morning walk', icon: '🌅' })
+    const updated = updateHabit(habit.id, {
+      title: 'Morning walk',
+      icon: '🌅',
+      reminderEnabled: true,
+      reminderTime: '07:00',
+    })
 
     expect(updated?.title).toBe('Morning walk')
-    expect(getActiveHabits()[0].icon).toBe('🌅')
+    expect(getActiveHabits()[0].reminderEnabled).toBe(true)
+    expect(getActiveHabits()[0].reminderTime).toBe('07:00')
+  })
+
+  it('disables reminders when archiving', () => {
+    const habit = addHabit({
+      title: 'Journal',
+      icon: '📝',
+      reminderEnabled: true,
+      reminderTime: '21:00',
+    })
+
+    archiveHabit(habit.id)
+
+    expect(getArchivedHabits()[0].reminderEnabled).toBe(false)
   })
 
   it('toggles completion for a date', () => {

@@ -21,3 +21,5 @@ export const DEFAULT_HABIT_SUGGESTIONS: HabitSuggestion[] = [
   { icon: '💪', title: 'Workout 45 min' },
   { icon: '📖', title: 'Read 20 pages' },
 ]
+
+export const DEFAULT_REMINDER_TIME = '08:00'

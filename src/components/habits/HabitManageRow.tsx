@@ -1,4 +1,5 @@
 import type { Habit } from '../../types/habit'
+import { formatReminderTimeLabel } from '../../services/habitReminderService'
 import { Button } from '../ui/Button'
 
 interface HabitManageRowProps {
@@ -14,9 +15,16 @@ export function HabitManageRow({ habit, onEdit, onArchive }: HabitManageRowProps
         {habit.icon}
       </span>
 
-      <span className="min-w-0 flex-1 truncate font-medium text-gray-900 dark:text-gray-100">
-        {habit.title}
-      </span>
+      <div className="min-w-0 flex-1">
+        <span className="block truncate font-medium text-gray-900 dark:text-gray-100">
+          {habit.title}
+        </span>
+        {habit.reminderEnabled ? (
+          <span className="text-xs text-primary">
+            Reminder at {formatReminderTimeLabel(habit.reminderTime)}
+          </span>
+        ) : null}
+      </div>
 
       <Button
         type="button"

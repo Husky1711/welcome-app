@@ -1,4 +1,4 @@
-import { MAX_HABITS } from '../constants/habits'
+import { DEFAULT_REMINDER_TIME, MAX_HABITS } from '../constants/habits'
 import { STORAGE_KEYS } from '../constants/auth'
 import type { Habit, HabitInput, HabitLog } from '../types/habit'
 
@@ -69,12 +69,13 @@ export function addHabit(input: HabitInput): Habit {
   }
 
   const habits = getStoredHabitsRaw()
+  const id = generateId()
   const habit: Habit = {
-    id: generateId(),
+    id,
     title: input.title.trim(),
     icon: input.icon.trim() || '✅',
-    reminderEnabled: false,
-    reminderTime: '08:00',
+    reminderEnabled: input.reminderEnabled ?? false,
+    reminderTime: input.reminderTime ?? DEFAULT_REMINDER_TIME,
     sortOrder: habits.length,
     isArchived: false,
     createdAt: new Date().toISOString(),
@@ -89,7 +90,7 @@ export function archiveHabit(id: string): boolean {
   const index = habits.findIndex((habit) => habit.id === id)
   if (index === -1) return false
 
-  habits[index] = { ...habits[index], isArchived: true }
+  habits[index] = { ...habits[index], isArchived: true, reminderEnabled: false }
   saveHabits(habits)
   return true
 }
@@ -103,6 +104,8 @@ export function updateHabit(id: string, input: HabitInput): Habit | null {
     ...habits[index],
     title: input.title.trim(),
     icon: input.icon.trim() || '✅',
+    reminderEnabled: input.reminderEnabled ?? habits[index].reminderEnabled,
+    reminderTime: input.reminderTime ?? habits[index].reminderTime,
   }
 
   habits[index] = updated

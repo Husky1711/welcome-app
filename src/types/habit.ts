@@ -21,6 +21,8 @@ export interface HabitLog {
 export interface HabitInput {
   title: string
   icon: string
+  reminderEnabled?: boolean
+  reminderTime?: string
 }
 
 export interface DayProgress {

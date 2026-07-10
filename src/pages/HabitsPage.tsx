@@ -1,11 +1,16 @@
 import { useState } from 'react'
-import { HabitForm } from '../components/habits/HabitForm'
+import { HabitForm, type HabitFormValues } from '../components/habits/HabitForm'
 import { HabitManageRow } from '../components/habits/HabitManageRow'
 import { TrackerNav } from '../components/habits/TrackerNav'
 import { Button } from '../components/ui/Button'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { ROUTES } from '../constants/routes'
 import { useHabits } from '../hooks/useHabits'
+import {
+  cancelHabitReminder,
+  isNativeReminderSupported,
+  syncHabitReminder,
+} from '../services/habitReminderService'
 import type { Habit } from '../types/habit'
 import { AppLayout } from '../layouts/AppLayout'
 
@@ -15,27 +20,56 @@ export function HabitsPage() {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
   const [habitToArchive, setHabitToArchive] = useState<Habit | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
 
-  function handleCreate(title: string, icon: string) {
+  async function applyReminder(habit: Habit, enabled: boolean) {
+    if (!enabled) {
+      await cancelHabitReminder(habit.id)
+      return
+    }
+
+    const status = await syncHabitReminder(habit)
+    if (status === 'denied') {
+      setError(
+        'Notification permission denied. Enable notifications in your device settings to get habit reminders.',
+      )
+      return
+    }
+
+    if (!isNativeReminderSupported()) {
+      setInfo('Reminder saved. Notifications fire on the Android app after you allow permission.')
+    }
+  }
+
+  async function handleCreate(values: HabitFormValues) {
     try {
       setError(null)
-      createHabit({ title, icon })
+      setInfo(null)
+      const habit = createHabit(values)
       setIsCreating(false)
+      await applyReminder(habit, values.reminderEnabled)
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : 'Could not add habit.')
     }
   }
 
-  function handleEdit(title: string, icon: string) {
+  async function handleEdit(values: HabitFormValues) {
     if (!editingHabit) return
 
-    editHabit(editingHabit.id, { title, icon })
+    setError(null)
+    setInfo(null)
+    const habit = editHabit(editingHabit.id, values)
     setEditingHabit(null)
+
+    if (habit) {
+      await applyReminder(habit, values.reminderEnabled)
+    }
   }
 
-  function handleConfirmArchive() {
+  async function handleConfirmArchive() {
     if (!habitToArchive) return
 
+    await cancelHabitReminder(habitToArchive.id)
     archive(habitToArchive.id)
     if (editingHabit?.id === habitToArchive.id) {
       setEditingHabit(null)
@@ -49,8 +83,7 @@ export function HabitsPage() {
         <TrackerNav />
 
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Manage up to 8 active habits. Archived habits stay on your device but stop appearing in
-          your tracker.
+          Manage up to 8 active habits. Set daily reminders per habit on Android.
         </p>
 
         {isCreating ? (
@@ -66,6 +99,8 @@ export function HabitsPage() {
             <HabitForm
               initialTitle={editingHabit.title}
               initialIcon={editingHabit.icon}
+              initialReminderEnabled={editingHabit.reminderEnabled}
+              initialReminderTime={editingHabit.reminderTime}
               submitLabel="Save changes"
               onSubmit={handleEdit}
               onCancel={() => setEditingHabit(null)}
@@ -80,6 +115,12 @@ export function HabitsPage() {
         {error ? (
           <p className="text-sm text-error" role="alert">
             {error}
+          </p>
+        ) : null}
+
+        {info ? (
+          <p className="text-sm text-gray-600 dark:text-gray-400" role="status">
+            {info}
           </p>
         ) : null}
 
@@ -123,7 +164,7 @@ export function HabitsPage() {
         title="Archive habit?"
         message={
           habitToArchive
-            ? `"${habitToArchive.title}" will be archived. Past logs stay on this device.`
+            ? `"${habitToArchive.title}" will be archived. Its reminder will be turned off.`
             : ''
         }
         confirmLabel="Archive"
