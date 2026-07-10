@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
 
 export const APP_INFO = {
   name: 'Welcome App',
-  version: '1.2.1',
+  version: '2.0.0',
   privacyPolicyUrl: 'https://husky1711.github.io/welcome-app/',
   contactEmail: 'ponnapuvvulasaiprasad@gmail.com',
 } as const

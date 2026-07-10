@@ -22,11 +22,11 @@ export function DaySheet({
   const editable = canEditHabitDate(date)
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end bg-black/40" onClick={onClose}>
       <section
         role="dialog"
         aria-label={`Habits for ${formatShortDate(date)}`}
-        className="max-h-[70vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-4 shadow-lg"
+        className="max-h-[70vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-4 pb-[calc(4.5rem+env(safe-area-inset-bottom))] shadow-lg"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">

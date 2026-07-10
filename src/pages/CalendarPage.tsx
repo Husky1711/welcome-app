@@ -1,7 +1,5 @@
 import { CalendarGrid } from '../components/habits/CalendarGrid'
 import { DaySheet } from '../components/habits/DaySheet'
-import { TrackerNav } from '../components/habits/TrackerNav'
-import { ROUTES } from '../constants/routes'
 import { useCalendarTracker } from '../hooks/useCalendarTracker'
 import { AppLayout } from '../layouts/AppLayout'
 import { canEditHabitDate, formatMonthYear } from '../utils/dateUtils'
@@ -31,10 +29,8 @@ export function CalendarPage() {
   }
 
   return (
-    <AppLayout title="Calendar" backTo={ROUTES.WELCOME} align="top">
+    <AppLayout title="Calendar" align="top">
       <div className="space-y-4">
-        <TrackerNav />
-
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Tap a day to review habits. Blue dot = all done, amber = partial, gray = none.
         </p>

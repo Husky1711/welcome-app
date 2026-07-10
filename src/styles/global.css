@@ -14,6 +14,8 @@
 .dark {
   --color-surface: #1e1e1e;
   --color-background: #121212;
+  --color-primary: #42a5f5;
+  --color-primary-dark: #1e88e5;
 }
 
 body {

@@ -82,7 +82,7 @@ export function SettingsPage() {
         <section className="rounded-lg bg-surface p-4 shadow-md">
           <h2 className="font-medium text-gray-900 dark:text-gray-100">Data</h2>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Notes and settings are stored locally on this device.
+            Notes, habits, and settings are stored locally on this device.
           </p>
 
           <div className="mt-4">
@@ -96,7 +96,7 @@ export function SettingsPage() {
       <ConfirmDialog
         open={showClearConfirm}
         title="Clear all app data?"
-        message="This will delete your notes, profile session, and settings from this device. You will be signed out."
+        message="This will delete your habits, notes, profile session, and settings from this device. You will be signed out."
         confirmLabel={isClearing ? 'Clearing...' : 'Clear data'}
         destructive
         confirmDisabled={isClearing}

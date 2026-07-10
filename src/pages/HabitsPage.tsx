@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { HabitForm, type HabitFormValues } from '../components/habits/HabitForm'
 import { HabitManageRow } from '../components/habits/HabitManageRow'
-import { TrackerNav } from '../components/habits/TrackerNav'
 import { Button } from '../components/ui/Button'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { ROUTES } from '../constants/routes'
 import { useHabits } from '../hooks/useHabits'
 import {
   cancelHabitReminder,
@@ -78,10 +76,8 @@ export function HabitsPage() {
   }
 
   return (
-    <AppLayout title="Habits" backTo={ROUTES.WELCOME} align="top">
+    <AppLayout title="Habits" align="top">
       <div className="space-y-4">
-        <TrackerNav />
-
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Manage up to 8 active habits. Set daily reminders per habit on Android.
         </p>

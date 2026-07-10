@@ -1,9 +1,10 @@
 import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { SplashScreen } from '@capacitor/splash-screen'
-import { StatusBar, Style } from '@capacitor/status-bar'
 import { ROUTES } from './constants/routes'
 import { rescheduleAllHabitReminders } from './services/habitReminderService'
+import { getStoredSettings } from './utils/settingsStorage'
+import { syncStatusBarTheme } from './utils/statusBar'
 
 export async function initializeNativeShell(): Promise<void> {
   if (!Capacitor.isNativePlatform()) {
@@ -11,8 +12,7 @@ export async function initializeNativeShell(): Promise<void> {
   }
 
   try {
-    await StatusBar.setStyle({ style: Style.Light })
-    await StatusBar.setBackgroundColor({ color: '#1976D2' })
+    await syncStatusBarTheme(getStoredSettings().theme)
     await SplashScreen.hide()
   } catch (error) {
     console.warn('Native shell initialization skipped:', error)

@@ -13,6 +13,7 @@ import {
   getStoredSettings,
   setStoredTheme,
 } from '../utils/settingsStorage'
+import { syncStatusBarTheme } from '../utils/statusBar'
 
 interface SettingsContextValue {
   settings: AppSettings
@@ -27,6 +28,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     applyThemeToDocument(settings.theme)
+    void syncStatusBarTheme(settings.theme)
   }, [settings.theme])
 
   const setTheme = useCallback((theme: ThemeMode) => {

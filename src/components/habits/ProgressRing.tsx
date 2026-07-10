@@ -2,11 +2,21 @@ interface ProgressRingProps {
   percent: number
   completed: number
   total: number
+  size?: 'sm' | 'md'
 }
 
-export function ProgressRing({ percent, completed, total }: ProgressRingProps) {
-  const radius = 52
-  const stroke = 10
+const SIZE_CONFIG = {
+  sm: { radius: 36, stroke: 7, fractionClass: 'text-lg', percentClass: 'text-[10px]' },
+  md: { radius: 52, stroke: 10, fractionClass: 'text-2xl', percentClass: 'text-xs' },
+} as const
+
+export function ProgressRing({
+  percent,
+  completed,
+  total,
+  size = 'md',
+}: ProgressRingProps) {
+  const { radius, stroke, fractionClass, percentClass } = SIZE_CONFIG[size]
   const normalizedRadius = radius - stroke / 2
   const circumference = normalizedRadius * 2 * Math.PI
   const strokeDashoffset = circumference - (percent / 100) * circumference
@@ -42,10 +52,10 @@ export function ProgressRing({ percent, completed, total }: ProgressRingProps) {
       </svg>
 
       <div className="absolute text-center">
-        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <p className={`${fractionClass} font-semibold text-gray-900 dark:text-gray-100`}>
           {completed}/{total}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{percent}%</p>
+        <p className={`${percentClass} text-gray-500 dark:text-gray-400`}>{percent}%</p>
       </div>
     </div>
   )

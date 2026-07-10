@@ -12,7 +12,7 @@
 ## Short description (80 chars max)
 
 ```
-Your personal space — sign in, save private notes, and manage your profile.
+Daily habits, calendar, reminders & private notes — your personal space.
 ```
 
 ## Full description
@@ -21,27 +21,31 @@ Your personal space — sign in, save private notes, and manage your profile.
 Welcome App is a lightweight personal space for Android. Sign in once and access your private dashboard on your device.
 
 Features:
-• Secure sign-in with a personalized welcome screen
-• Private notes — create, edit, and delete notes stored locally on your device
+• Daily habit tracker — checklist with progress ring and streaks
+• Calendar view — review completion history for the last 7 days
+• Habit reminders — optional daily notifications per habit (Android)
+• Private notes — create, edit, and delete notes stored locally
 • Profile — update your display name
 • Settings — light/dark theme, privacy policy, and data controls
-• Clean, modern design built for mobile
+• Clean, modern design with bottom navigation built for mobile
 
-All notes and session data stay on your device. No account server required.
+All habits, notes, and session data stay on your device. No account server required.
 
 Reviewer test account:
 Email: admin@example.com
 Password: password123
 ```
 
-## Release notes (v1.2.0)
+## Release notes (v2.0.0)
 
 ```
-What's new:
-• Delete confirmation before removing notes
-• Show/hide password toggle on login
-• Improved confirmation dialogs for data actions
-• Personal dashboard with notes, profile, and settings
+What's new in v2.0:
+• Daily Tracker — habits checklist with progress ring and streaks
+• Calendar — month view with completion dots and day review
+• Reminders — optional daily notifications per habit on Android
+• Bottom navigation — quick access to Home, Today, Calendar, and Habits
+• Dashboard widget — today's habit progress at a glance
+• Dark mode polish across the app
 ```
 
 ## Reviewer instructions (Play Console → App content → App access)
@@ -53,7 +57,9 @@ Test credentials:
 Email: admin@example.com
 Password: password123
 
-Flow: Login → Dashboard → try Notes, Profile, or Settings → Logout.
+Flow: Login → Dashboard → Daily Tracker (Today tab) → add a habit → toggle complete → try Calendar and Habits tabs → Settings → Logout.
+
+For reminders: enable a habit reminder on the Habits tab. Notifications require permission on a physical Android device.
 ```
 
 ## Data safety (Phase 1 — mock auth)
@@ -61,10 +67,10 @@ Flow: Login → Dashboard → try Notes, Profile, or Settings → Logout.
 | Question | Answer |
 |----------|--------|
 | Collect/transmit data off-device? | No |
-| Store data on device? | Yes — email for session, notes, and settings |
+| Store data on device? | Yes — email for session, habits, notes, and settings |
 | Purpose | App functionality |
 | Encrypted in transit? | N/A |
-| User can delete data? | Yes — Log out |
+| User can delete data? | Yes — Log out or Clear all app data |
 
 ## Privacy policy URL
 
@@ -78,10 +84,8 @@ Enable GitHub Pages from the `main` branch `/docs` folder — see `docs/GITHUB_P
 
 | Asset | File |
 |-------|------|
-| App icon (512×512) | `assets/store/app-icon-512.png` |
-| Feature graphic (1024×500) | `assets/store/feature-graphic-1024x500.png` |
-| Screenshot 1 — Login | `assets/store/01-login-screen.png` |
-| Screenshot 2 — Dashboard | `assets/store/02-dashboard.png` |
-| Screenshot 3 — Notes | `assets/store/03-notes-screen.png` |
-| Screenshot 4 — Profile | `assets/store/04-profile-screen.png` |
-| Screenshot 5 — Settings | `assets/store/05-settings-screen.png` |
+| App icon | `assets/store/icon-512.png` |
+| Feature graphic | `assets/store/feature-graphic.png` |
+| Phone screenshots | `assets/store/screenshot-*.png` |
+
+Re-capture screenshots after v2.0 UI changes (Today, Calendar, Habits, dashboard widget). Run `npm run screenshots`.

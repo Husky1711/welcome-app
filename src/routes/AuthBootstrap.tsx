@@ -18,7 +18,7 @@ export function AuthBootstrap({ children }: AuthBootstrapProps) {
         aria-label="Loading application"
       >
         <Spinner size="lg" />
-        <p className="text-sm text-gray-600">Loading...</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Loading...</p>
       </div>
     )
   }

@@ -43,7 +43,7 @@ test.describe('Welcome App E2E', () => {
     await page.getByRole('link', { name: /Settings/i }).click()
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
     await expect(page.getByText('Version')).toBeVisible()
-    await expect(page.getByText('1.2.1')).toBeVisible()
+    await expect(page.getByText('2.0.0')).toBeVisible()
 
     await page.getByRole('button', { name: /Switch to dark mode/i }).click()
     await expect(page.getByText('Current theme: Dark')).toBeVisible()

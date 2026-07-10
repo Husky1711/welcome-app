@@ -1,9 +1,9 @@
 import { LogoutButton } from '../components/auth/LogoutButton'
 import { DashboardCard } from '../components/dashboard/DashboardCard'
+import { TrackerDashboardWidget } from '../components/dashboard/TrackerDashboardWidget'
 import { Alert } from '../components/ui/Alert'
 import { ROUTES } from '../constants/routes'
 import { useAuth } from '../hooks/useAuth'
-import { useHabits } from '../hooks/useHabits'
 import { useNotes } from '../hooks/useNotes'
 import { AppLayout } from '../layouts/AppLayout'
 import logo from '../assets/logo.svg'
@@ -11,7 +11,6 @@ import logo from '../assets/logo.svg'
 export function WelcomePage() {
   const { user } = useAuth()
   const { notes } = useNotes()
-  const { habits } = useHabits()
 
   if (!user) {
     return null
@@ -43,16 +42,7 @@ export function WelcomePage() {
             Your space
           </h2>
 
-          <DashboardCard
-            to={ROUTES.TODAY}
-            title="Daily Tracker"
-            description={
-              habits.length > 0
-                ? `${habits.length} habit${habits.length === 1 ? '' : 's'} — tap to check in today`
-                : 'Build daily habits with a simple checklist'
-            }
-            icon="📅"
-          />
+          <TrackerDashboardWidget />
 
           <DashboardCard
             to={ROUTES.NOTES}
