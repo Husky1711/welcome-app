@@ -102,7 +102,7 @@ describe('habitStats', () => {
 
   it('calculates day progress', () => {
     const first = addHabit({ title: 'One', icon: '1️⃣' })
-    const second = addHabit({ title: 'Two', icon: '2️⃣' })
+    addHabit({ title: 'Two', icon: '2️⃣' })
     const today = formatLocalDate()
 
     setHabitCompleted(first.id, today, true)

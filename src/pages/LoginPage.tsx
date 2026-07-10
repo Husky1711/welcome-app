@@ -1,10 +1,9 @@
-import { LoginForm } from '../components/auth/LoginForm'
-import { AuthLayout } from '../layouts/AuthLayout'
+import { SignInPage } from './SignInPage'
 
 export function LoginPage() {
   return (
-    <AuthLayout title="Welcome App" subtitle="Sign in to your personal space">
-      <LoginForm />
-    </AuthLayout>
+    <div className="login-route">
+      <SignInPage />
+    </div>
   )
 }
