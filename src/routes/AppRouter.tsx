@@ -4,6 +4,7 @@ import { LoginPage } from '../pages/LoginPage'
 import { NotesPage } from '../pages/NotesPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { SettingsPage } from '../pages/SettingsPage'
+import { TodayPage } from '../pages/TodayPage'
 import { WelcomePage } from '../pages/WelcomePage'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PublicRoute } from './PublicRoute'
@@ -17,6 +18,7 @@ export function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route path={ROUTES.WELCOME} element={<WelcomePage />} />
+        <Route path={ROUTES.TODAY} element={<TodayPage />} />
         <Route path={ROUTES.NOTES} element={<NotesPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
