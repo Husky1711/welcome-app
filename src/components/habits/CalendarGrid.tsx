@@ -1,14 +1,9 @@
 import type { DayStatus } from '../../types/habit'
+import { BackChevronIcon } from '../icons/NavIcons'
 import { parseLocalDate } from '../../utils/dateUtils'
+import { getDayProgress } from '../../utils/habitStats'
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
-
-const STATUS_DOT_CLASS: Record<DayStatus, string> = {
-  empty: 'bg-transparent',
-  none: 'bg-gray-300 dark:bg-gray-600',
-  partial: 'bg-amber-400',
-  full: 'bg-primary',
-}
 
 interface CalendarGridProps {
   monthLabel: string
@@ -19,6 +14,22 @@ interface CalendarGridProps {
   onSelectDate: (date: string) => void
   onPreviousMonth: () => void
   onNextMonth: () => void
+}
+
+function getBarPercent(date: string, status: DayStatus, today: string): number {
+  if (date > today) {
+    return 0
+  }
+
+  if (status === 'full') {
+    return 100
+  }
+
+  if (status === 'partial') {
+    return getDayProgress(date).percent
+  }
+
+  return 0
 }
 
 export function CalendarGrid({
@@ -32,38 +43,36 @@ export function CalendarGrid({
   onNextMonth,
 }: CalendarGridProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-surface p-4 dark:border-gray-700">
-      <div className="mb-4 flex items-center justify-between">
+    <section className="calendar-ledger" aria-label="Monthly habit calendar">
+      <div className="calendar-ledger__header">
         <button
           type="button"
           onClick={onPreviousMonth}
           aria-label="Previous month"
-          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-primary transition hover:bg-primary/10"
+          className="calendar-ledger__nav-btn"
         >
-          ←
+          <BackChevronIcon size={18} />
         </button>
 
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{monthLabel}</h2>
+        <h2 className="calendar-ledger__title">{monthLabel}</h2>
 
         <button
           type="button"
           onClick={onNextMonth}
           aria-label="Next month"
-          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-primary transition hover:bg-primary/10"
+          className="calendar-ledger__nav-btn calendar-ledger__nav-btn--next"
         >
-          →
+          <BackChevronIcon size={18} />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+      <div className="calendar-ledger__weekdays" aria-hidden="true">
         {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="py-1">
-            {label}
-          </div>
+          <div key={label}>{label}</div>
         ))}
       </div>
 
-      <div className="mt-1 grid grid-cols-7 gap-1">
+      <div className="calendar-ledger__grid">
         {days.map((date, index) => {
           if (!date) {
             return <div key={`empty-${index}`} aria-hidden="true" />
@@ -73,6 +82,9 @@ export function CalendarGrid({
           const status = dayStatuses.get(date) ?? 'empty'
           const isToday = date === today
           const isSelected = date === selectedDate
+          const isFuture = date > today
+          const barPercent = getBarPercent(date, status, today)
+          const isPartial = status === 'partial' && barPercent > 0 && barPercent < 100
 
           return (
             <button
@@ -81,27 +93,46 @@ export function CalendarGrid({
               onClick={() => onSelectDate(date)}
               aria-label={`${date}, ${status} completion${isToday ? ', today' : ''}`}
               aria-pressed={isSelected}
-              className={`flex flex-col items-center rounded-lg px-1 py-2 text-sm transition ${
-                isSelected
-                  ? 'bg-primary/10 ring-2 ring-primary'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
+              className={[
+                'calendar-ledger__cell',
+                isToday ? 'calendar-ledger__cell--today' : '',
+                isSelected ? 'calendar-ledger__cell--selected' : '',
+                isFuture ? 'calendar-ledger__cell--future' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
             >
-              <span
-                className={`font-medium ${
-                  isToday ? 'text-primary' : 'text-gray-900 dark:text-gray-100'
-                }`}
-              >
-                {dayNumber}
+              <span className="calendar-ledger__day">{dayNumber}</span>
+              <span className="calendar-ledger__bar" aria-hidden="true">
+                <span
+                  className={[
+                    'calendar-ledger__bar-fill',
+                    isPartial ? 'calendar-ledger__bar-fill--partial' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  style={{ width: `${barPercent}%` }}
+                />
               </span>
-              <span
-                className={`mt-1 h-1.5 w-1.5 rounded-full ${STATUS_DOT_CLASS[status]}`}
-                aria-hidden="true"
-              />
             </button>
           )
         })}
       </div>
-    </div>
+
+      <div className="calendar-ledger__legend" aria-label="Completion legend">
+        <span className="calendar-ledger__legend-item">
+          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--full" />
+          All done
+        </span>
+        <span className="calendar-ledger__legend-item">
+          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--partial" />
+          Partial
+        </span>
+        <span className="calendar-ledger__legend-item">
+          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--none" />
+          None
+        </span>
+      </div>
+    </section>
   )
 }

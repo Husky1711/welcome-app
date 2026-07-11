@@ -1,5 +1,5 @@
 import type { DayProgress, DayStatus } from '../types/habit'
-import { addDaysToDate, formatLocalDate } from './dateUtils'
+import { addDaysToDate, formatLocalDate, parseLocalDate } from './dateUtils'
 import {
   getActiveHabits,
   isHabitCompletedOnDate,
@@ -56,4 +56,57 @@ export function getMonthDayStatuses(
   }
 
   return statuses
+}
+
+export interface MonthSummary {
+  percent: number
+  loggedDays: number
+  perfectDays: number
+  partialDays: number
+}
+
+export function getMonthSummary(
+  year: number,
+  month: number,
+  today: string = formatLocalDate(),
+): MonthSummary {
+  const habits = getActiveHabits()
+  if (habits.length === 0) {
+    return { percent: 0, loggedDays: 0, perfectDays: 0, partialDays: 0 }
+  }
+
+  const todayDate = parseLocalDate(today)
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  let loggedDays = 0
+  let perfectDays = 0
+  let partialDays = 0
+  let percentSum = 0
+  let dayCount = 0
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = formatLocalDate(new Date(year, month, day))
+    if (parseLocalDate(date) > todayDate) {
+      break
+    }
+
+    const status = getDayStatus(date)
+    if (status === 'full') {
+      loggedDays += 1
+      perfectDays += 1
+    } else if (status === 'partial') {
+      loggedDays += 1
+      partialDays += 1
+    }
+
+    percentSum += getDayProgress(date).percent
+    dayCount += 1
+  }
+
+  return {
+    percent: dayCount === 0 ? 0 : Math.round(percentSum / dayCount),
+    loggedDays,
+    perfectDays,
+    partialDays,
+  }
 }

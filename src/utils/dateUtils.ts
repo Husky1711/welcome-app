@@ -54,8 +54,8 @@ export function formatMemberSince(value: string): string {
 
 export function formatShortDate(date: string): string {
   return parseLocalDate(date).toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
+    weekday: 'long',
+    month: 'long',
     day: 'numeric',
   })
 }

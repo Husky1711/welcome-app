@@ -1,9 +1,14 @@
+import { useMemo } from 'react'
 import { CalendarGrid } from '../components/habits/CalendarGrid'
+import { CalendarMonthSnapshot } from '../components/habits/CalendarMonthSnapshot'
 import { DaySheet } from '../components/habits/DaySheet'
 import { useCalendarTracker } from '../hooks/useCalendarTracker'
 import { AppLayout } from '../layouts/AppLayout'
 import { canEditHabitDate, formatMonthYear } from '../utils/dateUtils'
 import { toggleHabitCompleted } from '../utils/habitStorage'
+import { getMonthSummary } from '../utils/habitStats'
+import '../styles/calendar-page.css'
+import '../styles/habits-page.css'
 
 export function CalendarPage() {
   const {
@@ -21,6 +26,12 @@ export function CalendarPage() {
     refresh,
   } = useCalendarTracker()
 
+  const monthLabel = formatMonthYear(viewDate)
+  const monthSummary = useMemo(
+    () => getMonthSummary(viewDate.getFullYear(), viewDate.getMonth(), today),
+    [viewDate, today, dayStatuses],
+  )
+
   function handleToggle(habitId: string) {
     if (!selectedDate || !canEditHabitDate(selectedDate)) return
 
@@ -29,14 +40,17 @@ export function CalendarPage() {
   }
 
   return (
-    <AppLayout title="Calendar" align="top">
-      <div className="space-y-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Tap a day to review habits. Blue dot = all done, amber = partial, gray = none.
-        </p>
+    <AppLayout
+      title="Calendar"
+      subtitle="Every day leaves a trace."
+      showBrand
+      align="top"
+    >
+      <div className="calendar-page">
+        <CalendarMonthSnapshot monthLabel={monthLabel} summary={monthSummary} />
 
         <CalendarGrid
-          monthLabel={formatMonthYear(viewDate)}
+          monthLabel={monthLabel}
           days={days}
           dayStatuses={dayStatuses}
           selectedDate={selectedDate}
@@ -45,18 +59,6 @@ export function CalendarPage() {
           onPreviousMonth={goToPreviousMonth}
           onNextMonth={goToNextMonth}
         />
-
-        <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-primary" /> All done
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-amber-400" /> Partial
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600" /> None
-          </span>
-        </div>
       </div>
 
       {selectedDate ? (

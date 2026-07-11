@@ -21,22 +21,27 @@ export function DaySheet({
   onClose,
 }: DaySheetProps) {
   const editable = canEditHabitDate(date)
+  const completedCount = habits.filter((habit) => completedMap.get(habit.id)).length
+  const totalCount = habits.length
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-black/40" onClick={onClose}>
+    <div className="calendar-day-sheet-backdrop" onClick={onClose}>
       <section
         role="dialog"
         aria-label={`Habits for ${formatShortDate(date)}`}
-        className="max-h-[70vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-4 pb-[calc(4.5rem+env(safe-area-inset-bottom))] shadow-lg"
+        className="calendar-day-sheet"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-4 flex items-center justify-between">
+        <div className="calendar-day-sheet__header">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {formatShortDate(date)}
-            </h2>
+            <h2 className="calendar-day-sheet__title">{formatShortDate(date)}</h2>
+            {habits.length > 0 ? (
+              <p className="calendar-day-sheet__summary">
+                {completedCount} of {totalCount} complete
+              </p>
+            ) : null}
             {!editable && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="calendar-day-sheet__readonly">
                 Read-only — only the last 7 days can be edited.
               </p>
             )}
@@ -46,51 +51,51 @@ export function DaySheet({
             type="button"
             onClick={onClose}
             aria-label="Close day details"
-            className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="calendar-day-sheet__close"
           >
             ✕
           </button>
         </div>
 
         {habits.length === 0 ? (
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="calendar-day-sheet__empty">
             No active habits yet. Add habits from the Habits tab.
           </p>
         ) : (
-          <ul className="space-y-2" aria-label={`Habits on ${date}`}>
-            {habits.map((habit) => (
-              <li key={habit.id}>
-                {editable ? (
-                  <HabitToggleRow
-                    habit={habit}
-                    completed={completedMap.get(habit.id) ?? false}
-                    streak={streakMap.get(habit.id) ?? 0}
-                    onToggle={onToggle}
-                  />
-                ) : (
-                  <div
-                    className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900/40"
-                    aria-label={`${habit.title}, ${
-                      completedMap.get(habit.id) ? 'completed' : 'not completed'
-                    }, read only`}
-                  >
-                    <HabitIcon icon={habit.icon} size="sm" />
-                    <span
-                      className={`flex-1 ${
-                        completedMap.get(habit.id)
-                          ? 'text-gray-500 line-through dark:text-gray-400'
-                          : 'text-gray-900 dark:text-gray-100'
+          <ul className="calendar-day-sheet__list" aria-label={`Habits on ${date}`}>
+            {habits.map((habit) => {
+              const completed = completedMap.get(habit.id) ?? false
+
+              return (
+                <li key={habit.id}>
+                  {editable ? (
+                    <HabitToggleRow
+                      habit={habit}
+                      completed={completed}
+                      streak={streakMap.get(habit.id) ?? 0}
+                      onToggle={onToggle}
+                    />
+                  ) : (
+                    <div
+                      className={`note-card calendar-day-sheet__readonly-card ${
+                        completed ? 'calendar-day-sheet__readonly-card--done' : ''
                       }`}
+                      aria-label={`${habit.title}, ${
+                        completed ? 'completed' : 'not completed'
+                      }, read only`}
                     >
-                      {habit.title}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {completedMap.get(habit.id) ? 'Done' : 'Not done'}
-                    </span>
-                  </div>
-                )}
-              </li>
-            ))}
+                      <div className="habit-card__icon-wrap">
+                        <HabitIcon icon={habit.icon} size="md" />
+                      </div>
+                      <span className="note-card__title">{habit.title}</span>
+                      <span className="calendar-day-sheet__readonly-status">
+                        {completed ? 'Done' : 'Not done'}
+                      </span>
+                    </div>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
