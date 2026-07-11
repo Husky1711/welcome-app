@@ -1,0 +1,432 @@
+/* App chrome — premium wellness aesthetic (matches sign-in mockups) */
+
+/* ── Hero header ── */
+
+.app-header--hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: none;
+  background: transparent;
+}
+
+.app-header__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.app-header__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  transform: scale(1.08);
+}
+
+.app-header__fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgb(247 246 243 / 0.15) 0%,
+    rgb(247 246 243 / 0.72) 45%,
+    rgb(247 246 243 / 0.98) 78%,
+    rgb(247 246 243) 100%
+  );
+}
+
+.dark .app-header__fade {
+  background: linear-gradient(
+    to bottom,
+    rgb(18 18 18 / 0.1) 0%,
+    rgb(18 18 18 / 0.75) 45%,
+    rgb(18 18 18 / 0.96) 78%,
+    rgb(18 18 18) 100%
+  );
+}
+
+.app-header__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 1rem 1.25rem 1.35rem;
+}
+
+.app-header__back {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-header__back--solid {
+  color: #ffffff;
+  background: #1b4332;
+  box-shadow: 0 4px 14px rgb(27 67 50 / 0.28);
+}
+
+.app-header__back--solid:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgb(27 67 50 / 0.34);
+}
+
+.app-header__back--solid:active {
+  transform: scale(0.96);
+}
+
+.app-header__copy {
+  min-width: 0;
+}
+
+.app-header__title {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #1b4332;
+}
+
+.dark .app-header__title {
+  color: #8fd4ad;
+}
+
+.app-header__subtitle {
+  margin: 0.45rem 0 0;
+  max-width: 20rem;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #666666;
+}
+
+.dark .app-header__subtitle {
+  color: #a3a3a3;
+}
+
+/* ── Floating pill bottom nav ── */
+
+.bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+  pointer-events: none;
+  padding: 0 1rem max(0.85rem, env(safe-area-inset-bottom));
+}
+
+.bottom-nav__pill {
+  pointer-events: auto;
+  display: flex;
+  max-width: 22rem;
+  margin-inline: auto;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgb(255 255 255 / 0.65);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.88);
+  box-shadow:
+    0 10px 40px rgb(15 23 42 / 0.14),
+    0 2px 8px rgb(15 23 42 / 0.06);
+  backdrop-filter: blur(18px);
+}
+
+.dark .bottom-nav__pill {
+  border-color: rgb(255 255 255 / 0.08);
+  background: rgb(38 38 38 / 0.9);
+  box-shadow:
+    0 10px 40px rgb(0 0 0 / 0.45),
+    0 2px 8px rgb(0 0 0 / 0.2);
+}
+
+.bottom-nav__tab {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 3.25rem;
+  padding: 0.25rem 0.15rem 0.35rem;
+  color: #8c8c8c;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.bottom-nav__tab:hover {
+  color: #5a5a5a;
+}
+
+.dark .bottom-nav__tab:hover {
+  color: #d4d4d4;
+}
+
+.bottom-nav__tab--active {
+  color: #1b4332;
+}
+
+.dark .bottom-nav__tab--active {
+  color: #8fd4ad;
+}
+
+.bottom-nav__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2rem;
+  border-radius: 0.75rem;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.bottom-nav__tab--active .bottom-nav__icon-wrap {
+  background: rgb(27 67 50 / 0.12);
+  box-shadow: 0 0 0 1px rgb(27 67 50 / 0.08);
+  transform: translateY(-1px);
+}
+
+.dark .bottom-nav__tab--active .bottom-nav__icon-wrap {
+  background: rgb(111 212 173 / 0.15);
+  box-shadow: 0 0 0 1px rgb(111 212 173 / 0.12);
+}
+
+.bottom-nav__label {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* ── Premium note cards ── */
+
+.note-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgb(27 67 50 / 0.08);
+  background: #ffffff;
+  padding: 1.1rem 1.15rem 1rem 1.35rem;
+  box-shadow: 0 4px 18px rgb(15 23 42 / 0.06);
+}
+
+.note-card::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.85rem;
+  left: 0;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: #1b4332;
+}
+
+.dark .note-card {
+  border-color: rgb(255 255 255 / 0.06);
+  background: #242424;
+}
+
+.dark .note-card::before {
+  background: #6aaf8a;
+}
+
+.note-card__title {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1b4332;
+}
+
+.dark .note-card__title {
+  color: #8fd4ad;
+}
+
+.note-card__body {
+  margin: 0.5rem 0 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #4a4a4a;
+}
+
+.dark .note-card__body {
+  color: #c8c8c8;
+}
+
+.note-card__meta {
+  margin: 0.65rem 0 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: #8c8c8c;
+}
+
+.note-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.note-empty {
+  border: 1px dashed rgb(27 67 50 / 0.2);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.7);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+}
+
+.note-empty p {
+  margin: 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: #8c8c8c;
+}
+
+/* ── Dashboard feature cards ── */
+
+.feature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgb(27 67 50 / 0.08);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgb(15 23 42 / 0.05);
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: rgb(27 67 50 / 0.16);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.1);
+}
+
+.dark .feature-card {
+  border-color: rgb(255 255 255 / 0.06);
+  background: #242424;
+}
+
+.feature-card__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  color: #1b4332;
+  background: rgb(27 67 50 / 0.1);
+}
+
+.dark .feature-card__icon {
+  color: #8fd4ad;
+  background: rgb(111 212 173 / 0.12);
+}
+
+.feature-card__title {
+  margin: 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111111;
+}
+
+.dark .feature-card__title {
+  color: #f5f5f5;
+}
+
+.feature-card__desc {
+  margin: 0.25rem 0 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #8c8c8c;
+}
+
+.app-btn-primary {
+  display: inline-flex;
+  min-height: 3rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 0.75rem;
+  background: #1b4332;
+  color: #ffffff;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-btn-primary:hover:not(:disabled) {
+  background: #153628;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgb(27 67 50 / 0.28);
+}
+
+.app-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.app-btn-outline {
+  display: inline-flex;
+  flex: 1;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(27 67 50 / 0.2);
+  border-radius: 0.65rem;
+  background: transparent;
+  color: #1b4332;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.app-btn-outline:hover {
+  background: rgb(27 67 50 / 0.06);
+}
+
+.app-btn-outline--danger {
+  color: #b91c1c;
+  border-color: rgb(185 28 28 / 0.25);
+}
+
+.app-btn-outline--danger:hover {
+  background: rgb(185 28 28 / 0.06);
+}
+
+.welcome-hero__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #1b4332;
+}
+
+.dark .welcome-hero__title {
+  color: #8fd4ad;
+}

@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MOCK_CREDENTIALS } from '../../constants/auth'
 import { AuthError } from '../../types/auth'
+import { deriveDisplayName } from '../../utils/authUser'
 import { clearStoredUser } from '../../utils/storage'
-import { deriveDisplayName, mockAuthService } from './mockAuthService'
+import { mockAuthService } from './mockAuthService'
 
 describe('deriveDisplayName', () => {
   it('returns the local part of an email', () => {
@@ -24,6 +25,7 @@ describe('mockAuthService', () => {
     expect(user).toEqual({
       email: MOCK_CREDENTIALS.email,
       displayName: 'admin',
+      memberSince: expect.any(String),
     })
     expect(mockAuthService.getCurrentUser()).toEqual(user)
   })

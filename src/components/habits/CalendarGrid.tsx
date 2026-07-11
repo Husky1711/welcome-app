@@ -38,7 +38,7 @@ export function CalendarGrid({
           type="button"
           onClick={onPreviousMonth}
           aria-label="Previous month"
-          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md text-primary hover:bg-blue-50 dark:hover:bg-gray-800"
+          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-primary transition hover:bg-primary/10"
         >
           ←
         </button>
@@ -49,7 +49,7 @@ export function CalendarGrid({
           type="button"
           onClick={onNextMonth}
           aria-label="Next month"
-          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md text-primary hover:bg-blue-50 dark:hover:bg-gray-800"
+          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-primary transition hover:bg-primary/10"
         >
           →
         </button>

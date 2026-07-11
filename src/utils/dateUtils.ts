@@ -15,6 +15,14 @@ export function formatDisplayDate(date: Date = new Date()): string {
   })
 }
 
+export function formatTodayHeaderDate(date: Date = new Date()): string {
+  return date.toLocaleDateString(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
 export function parseLocalDate(date: string): Date {
   const [year, month, day] = date.split('-').map(Number)
   return new Date(year, month - 1, day)
@@ -35,6 +43,13 @@ export function addDaysToDate(date: string, days: number): string {
 
 export function formatMonthYear(date: Date = new Date()): string {
   return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+}
+
+export function formatMemberSince(value: string): string {
+  return new Date(value).toLocaleDateString(undefined, {
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 export function formatShortDate(date: string): string {

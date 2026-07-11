@@ -15,7 +15,7 @@ async function signIn(page: import('@playwright/test').Page) {
 }
 
 test.describe('Phase 4: Bottom nav & dashboard widget', () => {
-  test('shows bottom nav on main tabs and hides on settings', async ({ page }) => {
+  test('shows bottom nav on main tabs and on settings', async ({ page }) => {
     await signIn(page)
 
     const bottomNav = page.getByRole('navigation', { name: 'Main navigation' })
@@ -35,13 +35,13 @@ test.describe('Phase 4: Bottom nav & dashboard widget', () => {
     await bottomNav.getByRole('tab', { name: 'Home' }).click()
     await page.getByRole('link', { name: /Settings/i }).click()
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
-    await expect(bottomNav).toHaveCount(0)
+    await expect(bottomNav).toBeVisible()
   })
 
   test('dashboard widget shows today progress after adding a habit', async ({ page }) => {
     await signIn(page)
 
-    await page.getByRole('link', { name: /Build daily habits/i }).click()
+    await page.getByRole('link', { name: /Daily Tracker/i }).click()
     await page.getByRole('button', { name: /Meditate 10 min/i }).click()
     await page.getByRole('button', { name: /Meditate 10 min, not completed/i }).click()
 
@@ -55,6 +55,8 @@ test.describe('Phase 4: Bottom nav & dashboard widget', () => {
     await signIn(page)
 
     await page.getByRole('link', { name: /Settings/i }).click()
-    await expect(page.getByText('2.0.0')).toBeVisible()
+    await expect(
+      page.locator('.settings-panel__row', { hasText: 'Version' }).locator('.settings-panel__aside'),
+    ).toHaveText('2.0.0')
   })
 })

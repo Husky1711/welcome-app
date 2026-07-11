@@ -28,27 +28,28 @@ test.describe('Welcome App E2E', () => {
     await expect(page.getByRole('heading', { name: 'Play Store checklist' })).toBeVisible()
     await expect(page.getByText('Upload AAB and complete Play Console forms.')).toBeVisible()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await page.getByRole('link', { name: /Profile/i }).click()
     await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 
-    const displayName = page.getByLabel('Display name')
+    const displayName = page.getByLabel('What should we call you?')
     await displayName.fill('Sai Prasad')
     await page.getByRole('button', { name: 'Save profile' }).click()
     await expect(page.getByText('Profile updated successfully.')).toBeVisible()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByRole('heading', { name: /Welcome, Sai Prasad/i })).toBeVisible()
 
     await page.getByRole('link', { name: /Settings/i }).click()
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
     await expect(page.getByText('Version')).toBeVisible()
-    await expect(page.getByText('2.0.0')).toBeVisible()
+    await expect(
+      page.locator('.settings-panel__row', { hasText: 'Version' }).locator('.settings-panel__aside'),
+    ).toHaveText('2.0.0')
 
-    await page.getByRole('button', { name: /Switch to dark mode/i }).click()
-    await expect(page.getByText('Current theme: Dark')).toBeVisible()
+    await page.locator('label.settings-toggle').click()
+    await expect(page.getByText('Dark mode')).toBeVisible()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
     await page.getByRole('button', { name: 'Log out of your account' }).click()
 
     await expect(page.getByRole('heading', { name: 'Welcome App' })).toBeVisible()

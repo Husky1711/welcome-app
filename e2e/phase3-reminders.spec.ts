@@ -21,21 +21,21 @@ test.describe('Phase 3: Habit reminders', () => {
 
     await page.getByRole('button', { name: 'Add new habit' }).click()
     await page.getByLabel('Habit name').fill('Morning stretch')
-    await page.getByRole('checkbox', { name: 'Daily reminder' }).check()
+    await page.locator('label.habit-form__toggle').click()
     await page.getByLabel('Reminder time').fill('07:30')
     await page.getByRole('button', { name: 'Add habit' }).click()
 
-    await expect(page.getByText('Reminder at')).toBeVisible()
+    await expect(page.locator('.habit-card__reminder')).toBeVisible()
     await expect(page.getByText('Morning stretch')).toBeVisible()
 
     await page.getByRole('button', { name: 'Edit habit Morning stretch' }).click()
-    await expect(page.getByRole('checkbox', { name: 'Daily reminder' })).toBeChecked()
+    await expect(page.getByRole('switch', { name: 'Daily reminder' })).toBeChecked()
     await expect(page.getByLabel('Reminder time')).toHaveValue('07:30')
 
-    await page.getByRole('checkbox', { name: 'Daily reminder' }).uncheck()
+    await page.locator('label.habit-form__toggle').click()
     await page.getByRole('button', { name: 'Save changes' }).click()
 
-    await expect(page.getByText('Reminder at')).toHaveCount(0)
+    await expect(page.locator('.habit-card__reminder')).toHaveCount(0)
   })
 
   test('persists reminder settings after reload', async ({ page }) => {
@@ -44,15 +44,15 @@ test.describe('Phase 3: Habit reminders', () => {
 
     await page.getByRole('button', { name: 'Add new habit' }).click()
     await page.getByLabel('Habit name').fill('Drink water')
-    await page.getByRole('checkbox', { name: 'Daily reminder' }).check()
+    await page.locator('label.habit-form__toggle').click()
     await page.getByLabel('Reminder time').fill('09:15')
     await page.getByRole('button', { name: 'Add habit' }).click()
 
     await page.reload()
 
-    await expect(page.getByText('Reminder at')).toBeVisible()
+    await expect(page.locator('.habit-card__reminder')).toBeVisible()
     await page.getByRole('button', { name: 'Edit habit Drink water' }).click()
-    await expect(page.getByRole('checkbox', { name: 'Daily reminder' })).toBeChecked()
+    await expect(page.getByRole('switch', { name: 'Daily reminder' })).toBeChecked()
     await expect(page.getByLabel('Reminder time')).toHaveValue('09:15')
   })
 })

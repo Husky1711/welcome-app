@@ -1,5 +1,7 @@
 export const STORAGE_KEYS = {
   AUTH_USER: 'welcome_app_auth',
+  AUTH_CREDENTIALS: 'welcome_app_credentials',
+  AVATARS: 'welcome_app_avatars',
   NOTES: 'welcome_app_notes',
   SETTINGS: 'welcome_app_settings',
   HABITS: 'welcome_app_habits',

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HabitForm, type HabitFormValues } from '../components/habits/HabitForm'
+import { HabitIcon } from '../components/habits/HabitIcon'
 import { HabitManageRow } from '../components/habits/HabitManageRow'
-import { Button } from '../components/ui/Button'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { useHabits } from '../hooks/useHabits'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../services/habitReminderService'
 import type { Habit } from '../types/habit'
 import { AppLayout } from '../layouts/AppLayout'
+import '../styles/habits-page.css'
 
 export function HabitsPage() {
   const { habits, archivedHabits, createHabit, editHabit, archive } = useHabits()
@@ -75,84 +76,106 @@ export function HabitsPage() {
     setHabitToArchive(null)
   }
 
-  return (
-    <AppLayout title="Habits" align="top">
-      <div className="space-y-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Manage up to 8 active habits. Set daily reminders per habit on Android.
-        </p>
+  const showAddButton = !isCreating && !editingHabit
 
+  useEffect(() => {
+    if (!editingHabit) {
+      return
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById(`habit-edit-${editingHabit.id}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [editingHabit])
+
+  return (
+    <AppLayout
+      title="Habits"
+      subtitle="Manage up to 8 active habits. Set daily reminders per habit on Android."
+      showBrand
+      align="top"
+    >
+      <div className="habits-page">
         {isCreating ? (
-          <div className="rounded-lg bg-surface p-4 shadow-md">
+          <div className="habit-form-card">
             <HabitForm
               submitLabel="Add habit"
               onSubmit={handleCreate}
               onCancel={() => setIsCreating(false)}
             />
           </div>
-        ) : editingHabit ? (
-          <div className="rounded-lg bg-surface p-4 shadow-md">
-            <HabitForm
-              initialTitle={editingHabit.title}
-              initialIcon={editingHabit.icon}
-              initialReminderEnabled={editingHabit.reminderEnabled}
-              initialReminderTime={editingHabit.reminderTime}
-              submitLabel="Save changes"
-              onSubmit={handleEdit}
-              onCancel={() => setEditingHabit(null)}
-            />
-          </div>
-        ) : (
-          <Button fullWidth onClick={() => setIsCreating(true)}>
-            Add new habit
-          </Button>
-        )}
+        ) : null}
 
         {error ? (
-          <p className="text-sm text-error" role="alert">
+          <p className="habits-page__feedback habits-page__feedback--error" role="alert">
             {error}
           </p>
         ) : null}
 
         {info ? (
-          <p className="text-sm text-gray-600 dark:text-gray-400" role="status">
+          <p className="habits-page__feedback habits-page__feedback--info" role="status">
             {info}
           </p>
         ) : null}
 
-        <section aria-label="Active habits" className="space-y-2">
+        <section aria-label="Active habits">
           {habits.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
-              No active habits yet.
-            </p>
+            <div className="habits-empty">
+              <p>No active habits yet. Add one to start building your daily rhythm.</p>
+            </div>
           ) : (
-            habits.map((habit) => (
-              <HabitManageRow
-                key={habit.id}
-                habit={habit}
-                onEdit={setEditingHabit}
-                onArchive={setHabitToArchive}
-              />
-            ))
+            <ul className="habits-page__list">
+              {habits.map((habit) =>
+                editingHabit?.id === habit.id ? (
+                  <li key={habit.id} id={`habit-edit-${habit.id}`} className="habit-form-card">
+                    <HabitForm
+                      key={habit.id}
+                      initialTitle={editingHabit.title}
+                      initialIcon={editingHabit.icon}
+                      initialReminderEnabled={editingHabit.reminderEnabled}
+                      initialReminderTime={editingHabit.reminderTime}
+                      submitLabel="Save changes"
+                      onSubmit={handleEdit}
+                      onCancel={() => setEditingHabit(null)}
+                    />
+                  </li>
+                ) : (
+                  <HabitManageRow
+                    key={habit.id}
+                    habit={habit}
+                    onEdit={setEditingHabit}
+                    onArchive={setHabitToArchive}
+                  />
+                ),
+              )}
+            </ul>
           )}
         </section>
 
-        {archivedHabits.length > 0 && (
-          <section aria-label="Archived habits" className="space-y-2">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              Archived
-            </h2>
+        {showAddButton ? (
+          <button type="button" className="habits-add-btn" onClick={() => setIsCreating(true)}>
+            <span className="habits-add-btn__icon" aria-hidden="true">
+              +
+            </span>
+            Add new habit
+          </button>
+        ) : null}
+
+        {archivedHabits.length > 0 ? (
+          <section className="habits-archived" aria-label="Archived habits">
+            <h2 className="habits-archived__title">Archived</h2>
             {archivedHabits.map((habit) => (
-              <div
-                key={habit.id}
-                className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-500 dark:border-gray-700 dark:bg-gray-900/40"
-              >
-                <span aria-hidden="true">{habit.icon}</span>
-                <span className="flex-1 truncate line-through">{habit.title}</span>
+              <div key={habit.id} className="habit-archived-row">
+                <HabitIcon icon={habit.icon} size="sm" className="habit-archived-row__icon" />
+                <span className="habit-archived-row__title">{habit.title}</span>
               </div>
             ))}
           </section>
-        )}
+        ) : null}
       </div>
 
       <ConfirmDialog

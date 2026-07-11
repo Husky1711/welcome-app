@@ -1,11 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
+import { AuthLayout } from '../layouts/AuthLayout'
 import { CalendarPage } from '../pages/CalendarPage'
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { HabitsPage } from '../pages/HabitsPage'
-import { LoginPage } from '../pages/LoginPage'
 import { NotesPage } from '../pages/NotesPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { SettingsPage } from '../pages/SettingsPage'
+import { SignInPage } from '../pages/SignInPage'
+import { SignUpPage } from '../pages/SignUpPage'
 import { TodayPage } from '../pages/TodayPage'
 import { WelcomePage } from '../pages/WelcomePage'
 import { ProtectedRoute } from './ProtectedRoute'
@@ -15,7 +18,21 @@ export function AppRouter() {
   return (
     <Routes>
       <Route element={<PublicRoute />}>
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route element={<AuthLayout />}>
+          <Route path={ROUTES.LOGIN} element={<SignInPage />} />
+          <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
+          <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+          <Route path="/sign-up/verify" element={<Navigate to={ROUTES.SIGN_UP} replace />} />
+          <Route path="/sign-up/account" element={<Navigate to={ROUTES.SIGN_UP} replace />} />
+          <Route
+            path="/forgot-password/verify"
+            element={<Navigate to={ROUTES.FORGOT_PASSWORD} replace />}
+          />
+          <Route
+            path="/forgot-password/reset"
+            element={<Navigate to={ROUTES.FORGOT_PASSWORD} replace />}
+          />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute />}>

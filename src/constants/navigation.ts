@@ -1,10 +1,28 @@
 import { ROUTES } from './routes'
 
-export const BOTTOM_NAV_TABS = [
-  { to: ROUTES.WELCOME, label: 'Home', icon: '🏠' },
-  { to: ROUTES.TODAY, label: 'Today', icon: '☀️' },
-  { to: ROUTES.CALENDAR, label: 'Calendar', icon: '📅' },
-  { to: ROUTES.HABITS, label: 'Habits', icon: '✅' },
-] as const
+export type NavIconKey = 'home' | 'today' | 'calendar' | 'habits'
+
+export const BOTTOM_NAV_TABS: ReadonlyArray<{
+  to: string
+  label: string
+  icon: NavIconKey
+}> = [
+  { to: ROUTES.WELCOME, label: 'Home', icon: 'home' },
+  { to: ROUTES.TODAY, label: 'Today', icon: 'today' },
+  { to: ROUTES.CALENDAR, label: 'Calendar', icon: 'calendar' },
+  { to: ROUTES.HABITS, label: 'Habits', icon: 'habits' },
+]
 
 export const BOTTOM_NAV_ROUTES: readonly string[] = BOTTOM_NAV_TABS.map((tab) => tab.to)
+
+/** Secondary screens reached from Home — still show the tab bar for consistent navigation. */
+export const SECONDARY_APP_ROUTES: readonly string[] = [
+  ROUTES.NOTES,
+  ROUTES.PROFILE,
+  ROUTES.SETTINGS,
+]
+
+export const BOTTOM_NAV_VISIBLE_ROUTES: readonly string[] = [
+  ...BOTTOM_NAV_ROUTES,
+  ...SECONDARY_APP_ROUTES,
+]

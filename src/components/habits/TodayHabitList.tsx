@@ -1,6 +1,6 @@
 import { DEFAULT_HABIT_SUGGESTIONS } from '../../constants/habits'
 import type { HabitSuggestion } from '../../types/habit'
-import { HabitToggleRow } from './HabitToggleRow'
+import { TodayHabitCard } from './TodayHabitCard'
 import type { Habit } from '../../types/habit'
 
 interface TodayHabitListProps {
@@ -22,38 +22,40 @@ export function TodayHabitList({
 }: TodayHabitListProps) {
   if (habits.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 bg-surface p-6 text-center dark:border-gray-600">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Start with one small habit. Tap a suggestion below:
-        </p>
+      <div className="today-empty">
+        <p className="today-empty__title">Start with one small habit</p>
+        <p className="today-empty__hint">Tap a suggestion below to add your first daily ritual.</p>
 
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="today-empty__suggestions">
           {DEFAULT_HABIT_SUGGESTIONS.map((suggestion) => (
             <button
               key={suggestion.title}
               type="button"
               onClick={() => onAddSuggestion(suggestion)}
-              className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-800 transition hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-200"
+              className="today-empty__suggestion"
             >
-              {suggestion.icon} {suggestion.title}
+              <span className="today-empty__suggestion-icon" aria-hidden="true">
+                {suggestion.icon}
+              </span>
+              {suggestion.title}
             </button>
           ))}
         </div>
 
-        {addError && (
-          <p className="mt-3 text-sm text-error" role="alert">
+        {addError ? (
+          <p className="today-empty__error" role="alert">
             {addError}
           </p>
-        )}
+        ) : null}
       </div>
     )
   }
 
   return (
-    <ul className="space-y-2" aria-label="Today's habits">
+    <ul className="today-habit-list" aria-label="Today's habits">
       {habits.map((habit) => (
         <li key={habit.id}>
-          <HabitToggleRow
+          <TodayHabitCard
             habit={habit}
             completed={completedMap.get(habit.id) ?? false}
             streak={streakMap.get(habit.id) ?? 0}

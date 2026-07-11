@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:firebase": "npx firebase emulators:exec --only auth --project demo-welcome-app \"vite --mode firebase-emulator\"",
     "build": "tsc -b && vite build",
     "build:android": "npm run build && npx cap sync android",
     "bundle:release": "npm run build:android && cd android && gradlew.bat bundleRelease",
@@ -12,6 +13,10 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:firebase": "playwright test --config=playwright.firebase.config.ts",
+    "test:e2e:firebase:headed": "playwright test --config=playwright.firebase.config.ts --headed",
+    "test:e2e:firebase:prod": "playwright test --config=playwright.firebase-prod.config.ts",
+    "test:e2e:firebase:prod:headed": "playwright test --config=playwright.firebase-prod.config.ts --headed",
     "test:e2e:headed": "playwright test --headed",
     "test:qa": "playwright test e2e/senior-qa.spec.ts --headed",
     "screenshots": "playwright test e2e/capture-screenshots.spec.ts"
@@ -25,6 +30,7 @@
     "@capacitor/local-notifications": "^8.2.0",
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
+    "firebase": "^12.16.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1"
@@ -38,6 +44,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "firebase-tools": "^15.23.0",
     "jsdom": "^29.1.1",
     "oxlint": "^1.71.0",
     "tailwindcss": "^4.3.2",

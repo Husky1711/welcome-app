@@ -1,7 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { DEFAULT_REMINDER_TIME, HABIT_ICON_OPTIONS } from '../../constants/habits'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
+import { HABIT_ICON_OUTPUT_SIZE, isHabitIconImage } from '../../utils/habitIcon'
+import { validateImageFile } from '../../utils/imageUpload'
+import { BellReminderIcon } from '../icons/NavIcons'
+import { CircularImageCropper } from '../ui/CircularImageCropper'
+import { HabitIcon } from './HabitIcon'
 
 export interface HabitFormValues {
   title: string
@@ -20,6 +23,26 @@ interface HabitFormProps {
   onCancel?: () => void
 }
 
+function UploadIconGlyph() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 16V6.5M12 6.5L9 9.5M12 6.5l3 3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5 16.5v1.75A1.75 1.75 0 0 0 6.75 20h10.5A1.75 1.75 0 0 0 19 18.25V16.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 export function HabitForm({
   initialTitle = '',
   initialIcon = '✅',
@@ -29,11 +52,25 @@ export function HabitForm({
   onSubmit,
   onCancel,
 }: HabitFormProps) {
+  const uploadInputId = useId()
+  const uploadInputRef = useRef<HTMLInputElement>(null)
+  const isEditing = Boolean(initialTitle)
   const [title, setTitle] = useState(initialTitle)
   const [icon, setIcon] = useState(initialIcon)
   const [reminderEnabled, setReminderEnabled] = useState(initialReminderEnabled)
   const [reminderTime, setReminderTime] = useState(initialReminderTime)
   const [error, setError] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [cropSource, setCropSource] = useState<string | null>(null)
+
+  const customIconSelected = isHabitIconImage(icon)
+
+  function closeCropper() {
+    if (cropSource?.startsWith('blob:')) {
+      URL.revokeObjectURL(cropSource)
+    }
+    setCropSource(null)
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -53,94 +90,214 @@ export function HabitForm({
     })
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Habit name"
-        name="title"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        placeholder="e.g. Drink 8 glasses of water"
-        maxLength={60}
-      />
+  function handleIconUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
 
-      <fieldset>
-        <legend className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Icon
-        </legend>
-        <div className="flex flex-wrap gap-2">
+    if (!file) {
+      return
+    }
+
+    try {
+      validateImageFile(file)
+      const objectUrl = URL.createObjectURL(file)
+      setCropSource(objectUrl)
+      setUploadError(null)
+    } catch (uploadFailure) {
+      setUploadError(
+        uploadFailure instanceof Error ? uploadFailure.message : 'Could not upload that image.',
+      )
+    }
+  }
+
+  function handleCropApply(dataUrl: string) {
+    setIcon(dataUrl)
+    setUploadError(null)
+    closeCropper()
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="habit-form">
+      <header className="habit-form__header">
+        <h2 className="habit-form__title">{isEditing ? 'Edit habit' : 'New habit'}</h2>
+        <p className="habit-form__subtitle">Give it a name and pick an icon.</p>
+      </header>
+
+      <section className="habit-form__section" aria-labelledby="habit-form-name-heading">
+        <h3 id="habit-form-name-heading" className="habit-form__section-label">
+          What habit?
+        </h3>
+
+        <div className="habit-form__preview" aria-hidden="true">
+          <HabitIcon icon={icon} size="lg" />
+        </div>
+
+        <label htmlFor="habit-name" className="habit-form__field-label">
+          Habit name
+        </label>
+        <input
+          id="habit-name"
+          name="title"
+          type="text"
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value)
+            setError(null)
+          }}
+          placeholder="e.g. Drink 8 glasses of water"
+          maxLength={60}
+          className="habit-form__input"
+        />
+      </section>
+
+      <section className="habit-form__section" aria-labelledby="habit-form-icon-heading">
+        <h3 id="habit-form-icon-heading" className="habit-form__section-label">
+          Pick your symbol
+        </h3>
+
+        <div className="habit-form__icon-grid">
           {HABIT_ICON_OPTIONS.map((option) => (
             <button
               key={option}
               type="button"
-              onClick={() => setIcon(option)}
+              onClick={() => {
+                setIcon(option)
+                setUploadError(null)
+              }}
               aria-pressed={icon === option}
               aria-label={`Select ${option} icon`}
-              className={`flex h-10 w-10 items-center justify-center rounded-lg border text-lg transition ${
-                icon === option
-                  ? 'border-primary bg-primary/10'
-                  : 'border-gray-200 hover:border-primary/40 dark:border-gray-700'
+              className={`habit-form__icon-option ${
+                icon === option ? 'habit-form__icon-option--selected' : ''
               }`}
             >
               {option}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={() => uploadInputRef.current?.click()}
+            disabled={cropSource !== null}
+            aria-pressed={customIconSelected}
+            aria-label="Upload custom icon"
+            className={`habit-form__icon-option habit-form__icon-option--upload ${
+              customIconSelected
+                ? 'habit-form__icon-option--upload-filled habit-form__icon-option--selected'
+                : ''
+            }`}
+          >
+            {customIconSelected ? (
+              <HabitIcon icon={icon} size="md" className="habit-form__upload-preview" />
+            ) : (
+              <>
+                <UploadIconGlyph />
+                <span className="habit-form__upload-label">Upload</span>
+              </>
+            )}
+          </button>
         </div>
-      </fieldset>
 
-      <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            checked={reminderEnabled}
-            onChange={(event) => setReminderEnabled(event.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Daily reminder
-          </span>
-        </label>
+        <input
+          ref={uploadInputRef}
+          id={uploadInputId}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="habit-form__file-input"
+          onChange={handleIconUpload}
+          disabled={cropSource !== null}
+          tabIndex={-1}
+        />
 
-        {reminderEnabled ? (
-          <div className="mt-3">
-            <label
-              htmlFor="habit-reminder-time"
-              className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Reminder time
-            </label>
-            <input
-              id="habit-reminder-time"
-              name="reminderTime"
-              type="time"
-              value={reminderTime}
-              onChange={(event) => setReminderTime(event.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-surface px-3 py-2.5 text-sm text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-primary dark:border-gray-600 dark:text-gray-100"
-            />
-            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-              On Android, you will be asked to allow notifications the first time you enable a
-              reminder.
-            </p>
-          </div>
+        <p className="habit-form__hint">Or upload your own image</p>
+        {uploadError ? (
+          <p className="habit-form__upload-error" role="alert">
+            {uploadError}
+          </p>
         ) : null}
-      </div>
+      </section>
+
+      <section className="habit-form__section" aria-labelledby="habit-form-reminder-heading">
+        <h3 id="habit-form-reminder-heading" className="habit-form__section-label">
+          Stay on track
+        </h3>
+
+        <div className="habit-form__reminder-panel">
+          <div className="habit-form__reminder-row">
+            <span className="habit-form__reminder-icon" aria-hidden="true">
+              <BellReminderIcon size={18} />
+            </span>
+
+            <div className="habit-form__reminder-copy">
+              <span className="habit-form__reminder-title">Daily reminder</span>
+              <span className="habit-form__reminder-subtitle">
+                We&apos;ll nudge you on Android
+              </span>
+            </div>
+
+            <label className="habit-form__toggle">
+              <input
+                type="checkbox"
+                role="switch"
+                aria-label="Daily reminder"
+                checked={reminderEnabled}
+                onChange={(event) => setReminderEnabled(event.target.checked)}
+                className="habit-form__toggle-input"
+              />
+              <span className="habit-form__toggle-track" aria-hidden="true">
+                <span className="habit-form__toggle-thumb" />
+              </span>
+            </label>
+          </div>
+
+          {reminderEnabled ? (
+            <div className="habit-form__time-wrap">
+              <label htmlFor="habit-reminder-time" className="habit-form__time-label">
+                Reminder time
+              </label>
+              <input
+                id="habit-reminder-time"
+                name="reminderTime"
+                type="time"
+                value={reminderTime}
+                onChange={(event) => setReminderTime(event.target.value)}
+                className="habit-form__time-input"
+              />
+              <p className="habit-form__time-hint">
+                On Android, you will be asked to allow notifications the first time you enable a
+                reminder.
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </section>
 
       {error ? (
-        <p className="text-sm text-error" role="alert">
+        <p className="habit-form__error" role="alert">
           {error}
         </p>
       ) : null}
 
-      <div className="flex gap-3">
-        <Button type="submit" fullWidth>
+      <div className="habit-form__actions">
+        <button type="submit" className="habits-add-btn" disabled={cropSource !== null}>
           {submitLabel}
-        </Button>
+        </button>
         {onCancel ? (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <button type="button" className="habit-form__cancel" onClick={onCancel}>
             Cancel
-          </Button>
+          </button>
         ) : null}
       </div>
+
+      <CircularImageCropper
+        open={cropSource !== null}
+        imageSrc={cropSource ?? ''}
+        title="Adjust your icon"
+        hint="Drag to reposition. Use the slider or scroll to zoom."
+        outputSize={HABIT_ICON_OUTPUT_SIZE}
+        confirmLabel="Use icon"
+        onApply={handleCropApply}
+        onCancel={closeCropper}
+      />
     </form>
   )
 }

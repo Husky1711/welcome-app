@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { NoteForm } from '../components/notes/NoteForm'
 import { NoteList } from '../components/notes/NoteList'
-import { Button } from '../components/ui/Button'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
-import { ROUTES } from '../constants/routes'
 import { useNotes } from '../hooks/useNotes'
 import type { Note } from '../types/note'
 import { AppLayout } from '../layouts/AppLayout'
+import '../styles/notes-page.css'
 
 export function NotesPage() {
   const { notes, createNote, editNote, removeNote } = useNotes()
@@ -37,14 +36,15 @@ export function NotesPage() {
   }
 
   return (
-    <AppLayout title="My Notes" backTo={ROUTES.WELCOME} align="top">
-      <div className="space-y-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Private notes stored only on this device.
-        </p>
-
+    <AppLayout
+      title="My Notes"
+      subtitle="Private notes stored only on this device."
+      showBrand
+      align="top"
+    >
+      <div className="notes-page">
         {isCreating ? (
-          <div className="rounded-lg bg-surface p-4 shadow-md">
+          <div className="note-form-card">
             <NoteForm
               submitLabel="Add note"
               onSubmit={handleCreate}
@@ -52,7 +52,7 @@ export function NotesPage() {
             />
           </div>
         ) : editingNote ? (
-          <div className="rounded-lg bg-surface p-4 shadow-md">
+          <div className="note-form-card">
             <NoteForm
               initialTitle={editingNote.title}
               initialBody={editingNote.body}
@@ -62,9 +62,13 @@ export function NotesPage() {
             />
           </div>
         ) : (
-          <Button fullWidth onClick={() => setIsCreating(true)}>
+          <button
+            type="button"
+            className="app-btn-primary notes-page__add"
+            onClick={() => setIsCreating(true)}
+          >
             Add new note
-          </Button>
+          </button>
         )}
 
         <NoteList

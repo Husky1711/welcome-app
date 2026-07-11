@@ -18,34 +18,31 @@ Daily habits, calendar, reminders & private notes — your personal space.
 ## Full description
 
 ```
-Welcome App is a lightweight personal space for Android. Sign in once and access your private dashboard on your device.
+Welcome App is a lightweight personal space for Android. Create an account and access your private dashboard.
 
 Features:
 • Daily habit tracker — checklist with progress ring and streaks
 • Calendar view — review completion history for the last 7 days
 • Habit reminders — optional daily notifications per habit (Android)
-• Private notes — create, edit, and delete notes stored locally
+• Private notes — create, edit, and delete notes stored locally on your device
 • Profile — update your display name
 • Settings — light/dark theme, privacy policy, and data controls
 • Clean, modern design with bottom navigation built for mobile
 
-All habits, notes, and session data stay on your device. No account server required.
+Account sign-in is powered by Firebase. Habits, notes, and settings stay on your device.
 
 Reviewer test account:
-Email: admin@example.com
-Password: password123
+Email: reviewer@yourdomain.com
+Password: (create in Firebase Console — see docs/FIREBASE_SETUP.md)
 ```
 
-## Release notes (v2.0.0)
+## Release notes (v2.1.0)
 
 ```
-What's new in v2.0:
-• Daily Tracker — habits checklist with progress ring and streaks
-• Calendar — month view with completion dots and day review
-• Reminders — optional daily notifications per habit on Android
-• Bottom navigation — quick access to Home, Today, Calendar, and Habits
-• Dashboard widget — today's habit progress at a glance
-• Dark mode polish across the app
+What's new:
+• Email sign-up and sign-in with Firebase Authentication
+• Forgot password via email reset link
+• Account security improvements
 ```
 
 ## Reviewer instructions (Play Console → App content → App access)
@@ -53,24 +50,23 @@ What's new in v2.0:
 ```
 All functionality is available after sign-in.
 
-Test credentials:
-Email: admin@example.com
-Password: password123
+Create a test account in the app via "Create account", or use the dedicated reviewer account configured in Firebase.
 
-Flow: Login → Dashboard → Daily Tracker (Today tab) → add a habit → toggle complete → try Calendar and Habits tabs → Settings → Logout.
+Flow: Sign in → Dashboard → Daily Tracker (Today tab) → add a habit → toggle complete → try Calendar and Habits tabs → Settings → Logout.
 
 For reminders: enable a habit reminder on the Habits tab. Notifications require permission on a physical Android device.
 ```
 
-## Data safety (Phase 1 — mock auth)
+## Data safety (Firebase auth v1)
 
 | Question | Answer |
 |----------|--------|
-| Collect/transmit data off-device? | No |
-| Store data on device? | Yes — email for session, habits, notes, and settings |
-| Purpose | App functionality |
-| Encrypted in transit? | N/A |
-| User can delete data? | Yes — Log out or Clear all app data |
+| Collect/transmit data off-device? | **Yes** — email address for account authentication via Firebase |
+| Store data on device? | **Yes** — habits, notes, settings, session cache |
+| Purpose | App functionality, account management |
+| Encrypted in transit? | **Yes** — Firebase uses HTTPS/TLS |
+| User can delete data? | **Yes** — Log out clears local session; uninstall removes local data; contact developer for account deletion |
+| Third-party processors | Google Firebase Authentication |
 
 ## Privacy policy URL
 
@@ -88,4 +84,8 @@ Enable GitHub Pages from the `main` branch `/docs` folder — see `docs/GITHUB_P
 | Feature graphic | `assets/store/feature-graphic.png` |
 | Phone screenshots | `assets/store/screenshot-*.png` |
 
-Re-capture screenshots after v2.0 UI changes (Today, Calendar, Habits, dashboard widget). Run `npm run screenshots`.
+Re-capture screenshots after auth UI changes. Run `npm run screenshots`.
+
+## Firebase setup
+
+See `docs/FIREBASE_SETUP.md` for creating the Firebase project, enabling Email/Password auth, and configuring `.env`.

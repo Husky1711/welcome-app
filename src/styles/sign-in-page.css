@@ -533,3 +533,229 @@
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
   }
 }
+
+/* ── Auth flow extras (sign-up, forgot-password) ── */
+
+.auth-card-step {
+  animation: card-step-in 0.8s var(--ease-out-expo) forwards;
+}
+
+.auth-card-step .sign-in-card__title,
+.auth-card-step .sign-in-card__subtitle,
+.auth-card-step .field,
+.auth-card-step .sign-in-button,
+.auth-card-step .privacy-note,
+.auth-card-step .auth-footer,
+.auth-card-step .auth-forgot-row,
+.auth-card-step .auth-resend,
+.auth-card-step .auth-hint,
+.auth-card-step .step-progress {
+  opacity: 1;
+  animation: none;
+  transform: none;
+}
+
+.auth-card__title--step {
+  margin-top: 0.75rem;
+}
+
+.step-progress {
+  margin-bottom: 0.25rem;
+  opacity: 0;
+  animation: reveal-up 0.7s var(--ease-out-expo) 0.92s forwards;
+}
+
+.step-progress__label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-green);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.step-progress__track {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.step-progress__dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: #e8e8e8;
+  transition: background 0.3s ease, transform 0.3s var(--ease-spring);
+}
+
+.step-progress__dot--active {
+  background: var(--color-green);
+}
+
+.step-progress__dot--current {
+  transform: scaleY(1.4);
+}
+
+.field--phone {
+  gap: 0.5rem;
+}
+
+.field__prefix {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+  padding-right: 0.625rem;
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.otp-input {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.otp-input__box {
+  width: 2.75rem;
+  height: 3.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-white);
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s var(--ease-spring);
+}
+
+.otp-input__box:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
+  transform: translateY(-1px);
+}
+
+.otp-input__box--filled {
+  border-color: #b8cbbf;
+  background: #f8fbf9;
+}
+
+.sign-in-form--otp {
+  gap: 1rem;
+}
+
+.auth-resend {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.auth-phone-mask,
+.auth-email-mask {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.auth-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.375rem 0 0;
+  opacity: 0;
+  animation: auth-fade-in 0.65s var(--ease-out-expo) 1.36s forwards;
+}
+
+.auth-link--subtle {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.auth-success {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-input);
+  background: rgba(27, 67, 50, 0.08);
+  border: 1px solid rgba(27, 67, 50, 0.15);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-green);
+  line-height: 1.45;
+}
+
+.auth-hint {
+  margin: -0.5rem 0 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.auth-error {
+  margin: -0.25rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #c0392b;
+}
+
+.auth-footer {
+  text-align: center;
+  margin: 1.25rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  opacity: 0;
+  animation: auth-fade-in 0.7s var(--ease-out-expo) 1.54s forwards;
+}
+
+.auth-link {
+  color: var(--color-green);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.auth-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.auth-link--button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+@keyframes auth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}

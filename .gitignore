@@ -17,6 +17,7 @@ blob-report/
 screenshots/
 .env.local
 .env
+.env.firebase-emulator
 
 # Android / Capacitor
 android/.gradle

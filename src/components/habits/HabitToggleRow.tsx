@@ -1,4 +1,5 @@
 import type { Habit } from '../../types/habit'
+import { HabitIcon } from './HabitIcon'
 
 interface HabitToggleRowProps {
   habit: Habit
@@ -27,9 +28,7 @@ export function HabitToggleRow({ habit, completed, streak, onToggle }: HabitTogg
         {completed ? '✓' : ''}
       </span>
 
-      <span className="text-xl" aria-hidden="true">
-        {habit.icon}
-      </span>
+      <HabitIcon icon={habit.icon} size="sm" className="habit-toggle-row__icon" />
 
       <span className="min-w-0 flex-1">
         <span

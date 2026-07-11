@@ -42,7 +42,7 @@ test('capture Play Store screenshots', async ({ page }) => {
     fullPage: false,
   })
 
-  await page.getByRole('link', { name: 'Go back' }).click()
+  await page.getByRole('tab', { name: 'Home' }).click()
   await page.getByRole('link', { name: /Profile/i }).click()
 
   await page.screenshot({
@@ -50,7 +50,7 @@ test('capture Play Store screenshots', async ({ page }) => {
     fullPage: false,
   })
 
-  await page.getByRole('link', { name: 'Go back' }).click()
+  await page.getByRole('tab', { name: 'Home' }).click()
   await page.getByRole('link', { name: /Settings/i }).click()
 
   await page.screenshot({

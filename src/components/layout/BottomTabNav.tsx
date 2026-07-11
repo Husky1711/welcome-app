@@ -1,20 +1,28 @@
 import { Link, useLocation } from 'react-router-dom'
-import { BOTTOM_NAV_TABS } from '../../constants/navigation'
+import { BOTTOM_NAV_TABS, type NavIconKey } from '../../constants/navigation'
+import {
+  CalendarNavIcon,
+  HabitsNavIcon,
+  HomeNavIcon,
+  TodayNavIcon,
+} from '../icons/NavIcons'
+
+const NAV_ICONS: Record<NavIconKey, typeof HomeNavIcon> = {
+  home: HomeNavIcon,
+  today: TodayNavIcon,
+  calendar: CalendarNavIcon,
+  habits: HabitsNavIcon,
+}
 
 export function BottomTabNav() {
   const location = useLocation()
 
   return (
-    <nav
-      aria-label="Main navigation"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-surface/95 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] backdrop-blur-sm dark:border-gray-700 dark:bg-surface/95 dark:shadow-none"
-    >
-      <div
-        className="mx-auto flex max-w-md pb-[env(safe-area-inset-bottom)]"
-        role="tablist"
-      >
+    <nav aria-label="Main navigation" className="bottom-nav">
+      <div className="bottom-nav__pill" role="tablist">
         {BOTTOM_NAV_TABS.map((tab) => {
           const isActive = location.pathname === tab.to
+          const Icon = NAV_ICONS[tab.icon]
 
           return (
             <Link
@@ -23,16 +31,12 @@ export function BottomTabNav() {
               role="tab"
               aria-selected={isActive}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 text-xs font-medium transition-colors ${
-                isActive
-                  ? 'text-primary'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              }`}
+              className={`bottom-nav__tab ${isActive ? 'bottom-nav__tab--active' : ''}`}
             >
-              <span aria-hidden="true" className="text-lg leading-none">
-                {tab.icon}
+              <span className="bottom-nav__icon-wrap" aria-hidden="true">
+                <Icon />
               </span>
-              <span>{tab.label}</span>
+              <span className="bottom-nav__label">{tab.label}</span>
             </Link>
           )
         })}

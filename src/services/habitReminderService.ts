@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import type { Habit } from '../types/habit'
 import { getActiveHabits } from '../utils/habitStorage'
+import { getHabitReminderIconPrefix } from '../utils/habitIcon'
 
 export type ReminderPermissionStatus = 'granted' | 'denied' | 'prompt' | 'unsupported'
 
@@ -87,7 +88,7 @@ export async function scheduleHabitReminder(habit: Habit): Promise<void> {
     notifications: [
       {
         id: getHabitNotificationId(habit.id),
-        title: `${habit.icon} Habit reminder`,
+        title: `${getHabitReminderIconPrefix(habit.icon)} Habit reminder`,
         body: `Time for: ${habit.title}`,
         schedule: {
           on: { hour: time.hour, minute: time.minute },

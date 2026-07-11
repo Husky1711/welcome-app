@@ -1,5 +1,6 @@
 import type { Habit } from '../../types/habit'
 import { canEditHabitDate, formatShortDate } from '../../utils/dateUtils'
+import { HabitIcon } from './HabitIcon'
 import { HabitToggleRow } from './HabitToggleRow'
 
 interface DaySheetProps {
@@ -73,7 +74,7 @@ export function DaySheet({
                       completedMap.get(habit.id) ? 'completed' : 'not completed'
                     }, read only`}
                   >
-                    <span aria-hidden="true">{habit.icon}</span>
+                    <HabitIcon icon={habit.icon} size="sm" />
                     <span
                       className={`flex-1 ${
                         completedMap.get(habit.id)

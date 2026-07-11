@@ -13,7 +13,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     'bg-primary text-white hover:bg-primary-dark focus-visible:outline-primary',
   outline:
-    'border border-primary bg-transparent text-primary hover:bg-blue-50 focus-visible:outline-primary dark:hover:bg-gray-800',
+    'border border-primary bg-transparent text-primary hover:bg-primary/8 focus-visible:outline-primary dark:hover:bg-primary/12',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

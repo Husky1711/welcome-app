@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from './Button'
 
 interface ConfirmDialogProps {
@@ -45,9 +46,9 @@ export function ConfirmDialog({
     return null
   }
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4"
       role="presentation"
       onClick={onCancel}
     >
@@ -82,6 +83,7 @@ export function ConfirmDialog({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

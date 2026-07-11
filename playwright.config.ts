@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: ['**/firebase-auth-flows.spec.ts', '**/firebase-prod-auth-flows.spec.ts'],
   fullyParallel: false,
   retries: 0,
   workers: 1,
@@ -23,5 +24,8 @@ export default defineConfig({
     url: 'http://localhost:5173',
     reuseExistingServer: true,
     timeout: 120000,
+    env: {
+      VITE_AUTH_PROVIDER: 'mock',
+    },
   },
 })

@@ -1,6 +1,7 @@
 export interface User {
   email: string
   displayName: string
+  memberSince?: string
 }
 
 export type AuthStatus =

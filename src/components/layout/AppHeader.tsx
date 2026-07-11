@@ -1,24 +1,37 @@
 import { Link } from 'react-router-dom'
+import signInBackground from '../../assets/sign-in-background.png'
+import signInLogo from '../../assets/sign-in-logo.png'
+import { BackChevronIcon } from '../icons/NavIcons'
 
 interface AppHeaderProps {
   title: string
+  subtitle?: string
   backTo?: string
+  showBrand?: boolean
 }
 
-export function AppHeader({ title, backTo }: AppHeaderProps) {
+export function AppHeader({ title, subtitle, backTo, showBrand = false }: AppHeaderProps) {
   return (
-    <header className="border-b border-gray-200 bg-surface px-4 py-4 dark:border-gray-700">
-      <div className="mx-auto flex w-full max-w-md items-center gap-3">
+    <header className="app-header app-header--hero">
+      <div className="app-header__bg" aria-hidden="true">
+        <img src={signInBackground} alt="" />
+      </div>
+      <div className="app-header__fade" aria-hidden="true" />
+
+      <div className="app-header__inner">
         {backTo ? (
-          <Link
-            to={backTo}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-sm font-medium text-primary hover:bg-blue-50 dark:hover:bg-gray-800"
-            aria-label="Go back"
-          >
-            ←
+          <Link to={backTo} className="app-header__back app-header__back--solid" aria-label="Go back">
+            <BackChevronIcon />
           </Link>
         ) : null}
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h1>
+
+        <div className="app-header__copy">
+          {showBrand ? (
+            <img src={signInLogo} alt="" className="app-header__brand" aria-hidden="true" />
+          ) : null}
+          <h1 className="app-header__title">{title}</h1>
+          {subtitle ? <p className="app-header__subtitle">{subtitle}</p> : null}
+        </div>
       </div>
     </header>
   )

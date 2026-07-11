@@ -103,7 +103,7 @@ test.describe('Senior QA — Dashboard & Navigation', () => {
     await expect(page.getByText(/0 private notes/i)).toBeVisible()
   })
 
-  test('back navigation returns to dashboard from each section', async ({ page }) => {
+  test('home tab returns to dashboard from each section', async ({ page }) => {
     const sections = [
       { link: /My Notes/i, heading: 'My Notes' },
       { link: /Profile/i, heading: 'Profile' },
@@ -113,7 +113,7 @@ test.describe('Senior QA — Dashboard & Navigation', () => {
     for (const section of sections) {
       await page.getByRole('link', { name: section.link }).click()
       await expect(page.getByRole('heading', { name: section.heading })).toBeVisible()
-      await page.getByRole('link', { name: 'Go back' }).click()
+      await page.getByRole('tab', { name: 'Home' }).click()
       await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
     }
   })
@@ -181,7 +181,7 @@ test.describe('Senior QA — Notes CRUD', () => {
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Persistent note' })).toBeVisible()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByText(/1 private note saved/i)).toBeVisible()
   })
 
@@ -209,18 +209,18 @@ test.describe('Senior QA — Profile', () => {
   })
 
   test('empty display name shows validation error', async ({ page }) => {
-    await page.getByLabel('Display name').fill('')
+    await page.getByLabel('What should we call you?').fill('')
     await page.getByRole('button', { name: 'Save profile' }).click()
 
     await expect(page.getByText('Display name cannot be empty.')).toBeVisible()
   })
 
   test('profile name change reflects on dashboard after navigation', async ({ page }) => {
-    await page.getByLabel('Display name').fill('QA Tester')
+    await page.getByLabel('What should we call you?').fill('QA Tester')
     await page.getByRole('button', { name: 'Save profile' }).click()
     await expect(page.getByText('Profile updated successfully.')).toBeVisible()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByRole('heading', { name: 'Welcome, QA Tester' })).toBeVisible()
 
     await page.reload()
@@ -236,21 +236,21 @@ test.describe('Senior QA — Settings & Data', () => {
   })
 
   test('theme toggle switches light and dark', async ({ page }) => {
-    await expect(page.getByText('Current theme: Light')).toBeVisible()
+    await expect(page.getByText('Light mode')).toBeVisible()
 
-    await page.getByRole('button', { name: /Switch to dark mode/i }).click()
-    await expect(page.getByText('Current theme: Dark')).toBeVisible()
+    await page.locator('label.settings-toggle').click()
+    await expect(page.getByText('Dark mode')).toBeVisible()
     await expect(page.locator('html')).toHaveClass(/dark/)
 
-    await page.getByRole('button', { name: /Switch to light mode/i }).click()
-    await expect(page.getByText('Current theme: Light')).toBeVisible()
+    await page.locator('label.settings-toggle').click()
+    await expect(page.getByText('Light mode')).toBeVisible()
   })
 
   test('theme preference persists after reload', async ({ page }) => {
-    await page.getByRole('button', { name: /Switch to dark mode/i }).click()
+    await page.locator('label.settings-toggle').click()
     await page.reload()
 
-    await expect(page.getByText('Current theme: Dark')).toBeVisible()
+    await expect(page.getByText('Dark mode')).toBeVisible()
     await expect(page.locator('html')).toHaveClass(/dark/)
   })
 
@@ -261,14 +261,14 @@ test.describe('Senior QA — Settings & Data', () => {
   })
 
   test('clear all data logs out and resets app', async ({ page }) => {
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await page.getByRole('link', { name: /My Notes/i }).click()
     await page.getByRole('button', { name: 'Add new note' }).click()
     await page.getByLabel('Title').fill('Temp note')
     await page.getByLabel('Content').fill('Will be cleared')
     await page.getByRole('button', { name: 'Add note' }).click()
 
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await page.getByRole('link', { name: /Settings/i }).click()
     await page.getByRole('button', { name: 'Clear all app data' }).click()
     await expect(page.getByRole('alertdialog', { name: 'Clear all app data?' })).toBeVisible()
@@ -285,7 +285,7 @@ test.describe('Senior QA — Settings & Data', () => {
   })
 
   test('delete note confirmation can be cancelled', async ({ page }) => {
-    await page.getByRole('link', { name: 'Go back' }).click()
+    await page.getByRole('tab', { name: 'Home' }).click()
     await page.getByRole('link', { name: /My Notes/i }).click()
     await page.getByRole('button', { name: 'Add new note' }).click()
     await page.getByLabel('Title').fill('Keep me')
@@ -300,9 +300,10 @@ test.describe('Senior QA — Settings & Data', () => {
 })
 
 test.describe('Senior QA — Logout & Security', () => {
-  test('logout from dashboard clears session', async ({ page }) => {
+  test('logout from settings clears session', async ({ page }) => {
     await clearAppStorage(page)
     await login(page)
+    await page.getByRole('link', { name: /Settings/i }).click()
     await page.getByRole('button', { name: 'Log out of your account' }).click()
 
     await expect(page.getByRole('heading', { name: 'Welcome App' })).toBeVisible()
