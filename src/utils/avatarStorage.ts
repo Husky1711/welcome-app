@@ -35,3 +35,7 @@ export function clearAvatarDataUrl(email: string): void {
   delete store[normalizeEmail(email)]
   writeStore(store)
 }
+
+export function clearStoredAvatars(): void {
+  localStorage.removeItem(STORAGE_KEYS.AVATARS)
+}

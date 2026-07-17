@@ -1,44 +1,115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Welcome App</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #212121; }
-    h1 { color: #1976d2; }
-    h2 { margin-top: 1.5rem; }
-  </style>
-</head>
-<body>
-  <h1>Privacy Policy</h1>
-  <p><strong>Welcome App</strong> · Last updated: July 8, 2026</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Privacy Policy for Welcome App" />
+    <title>Privacy Policy — Welcome App</title>
+    <style>
+      :root { color-scheme: light dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 3rem 1.25rem;
+        background: #f7f6f3;
+        color: #26342d;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: clamp(1.5rem, 5vw, 3.5rem);
+        border: 1px solid rgba(27, 67, 50, 0.1);
+        border-radius: 1.5rem;
+        background: #fff;
+        box-shadow: 0 16px 50px rgba(15, 35, 28, 0.08);
+      }
+      h1, h2 { color: #1b4332; line-height: 1.2; }
+      h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2rem, 7vw, 3rem); }
+      h2 { margin: 2rem 0 0.65rem; font-size: 1.25rem; }
+      h3 { margin: 1.25rem 0 0.4rem; font-size: 1rem; }
+      p, ul { margin: 0.55rem 0; }
+      li + li { margin-top: 0.35rem; }
+      a { color: #1b4332; font-weight: 600; text-underline-offset: 0.15rem; }
+      .meta { margin-top: 0.5rem; color: #68766e; }
+      @media (prefers-color-scheme: dark) {
+        body { background: #121212; color: #d7ddd9; }
+        main { border-color: rgba(255,255,255,0.08); background: #1e1e1e; box-shadow: none; }
+        h1, h2, a { color: #95d5b2; }
+        .meta { color: #a7b0a9; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy Policy</h1>
+      <p class="meta"><strong>Welcome App</strong> · Last updated: July 18, 2026</p>
+      <p>Welcome App is published by P Sai Prasad. This policy explains what information the app handles and the choices available to you.</p>
 
-  <h2>Overview</h2>
-  <p>Welcome App is a demonstration application published by P Sai Prasad. This policy explains how information is handled in the current version.</p>
+      <h2>Information we process</h2>
+      <h3>Account information</h3>
+      <p>If Firebase authentication is enabled, creating an account or signing in requires:</p>
+      <ul>
+        <li><strong>Email address</strong> for account creation, sign-in, password reset, and displaying your identity.</li>
+        <li><strong>Password</strong>, sent directly to Google Firebase Authentication over an encrypted connection. The app does not store it in plain text.</li>
+        <li><strong>Display name and account metadata</strong>, such as account creation time, when available from Firebase.</li>
+      </ul>
+      <p>Google processes authentication information on our behalf. Firebase may also process technical service data, such as IP address and device or request information, to operate and secure its service. See <a href="https://policies.google.com/privacy">Google's Privacy Policy</a> and <a href="https://firebase.google.com/support/privacy">Firebase Privacy and Security</a>.</p>
 
-  <h2>Information we collect</h2>
-  <p>When you sign in, your email address is stored <strong>locally on your device</strong> to keep you logged in. Notes you create and app settings (such as theme preference) are also stored locally. No personal data is sent to external servers in this version.</p>
+      <h3>Information stored on your device</h3>
+      <p>The following content is stored locally and is not uploaded to our servers in the current version:</p>
+      <ul>
+        <li>Habits, targets, completion history, streaks, and archived habits</li>
+        <li>Reminder preferences and reminder times</li>
+        <li>Private notes</li>
+        <li>Light/dark mode, app color, and other display preferences</li>
+        <li>Locally cached profile information</li>
+        <li>Optional profile photos and custom habit images</li>
+      </ul>
+      <p>Your account email and display name may also be cached locally to maintain your session and personalize the app.</p>
 
-  <h2>How we use information</h2>
-  <ul>
-    <li>Display your welcome message</li>
-    <li>Maintain your session until you log out</li>
-  </ul>
+      <h2>Device permissions</h2>
+      <p>The Android app may request notification permission to schedule habit reminders. On supported Android versions, it may also direct you to system settings for exact-alarm access. Reminder schedules are created and managed on your device.</p>
+      <p>You can deny notification permission or disable reminders at any time. Core habit and note features remain available.</p>
 
-  <h2>Data sharing</h2>
-  <p>We do not sell, rent, or share your data with third parties. No data leaves your device.</p>
+      <h2>Sharing</h2>
+      <p>The app can generate a habit-streak image. Nothing is shared automatically. An image leaves the app only when you choose <strong>Share</strong> and select another app or recipient. The selected service handles the image under its own privacy policy.</p>
 
-  <h2>Data retention</h2>
-  <p>Logging out removes session data. Uninstalling the app removes all app data from your device.</p>
+      <h2>How we use information</h2>
+      <ul>
+        <li>Create and authenticate your account</li>
+        <li>Send password-reset instructions when requested</li>
+        <li>Display your profile and personalize the app</li>
+        <li>Provide habits, notes, progress, insights, reminders, appearance, and sharing features</li>
+        <li>Maintain app security and reliability</li>
+      </ul>
 
-  <h2>Children's privacy</h2>
-  <p>The app is not directed at children under 13.</p>
+      <h2>Data sharing and sale</h2>
+      <p>We do not sell or rent your personal information. We do not use advertising SDKs or analytics SDKs in the current version.</p>
+      <p>Account information is processed by <strong>Google Firebase Authentication</strong> when Firebase authentication is enabled. Local habits, notes, completion history, photos, and settings are not sent to Firebase by the app.</p>
+      <p>Information you deliberately send using email feedback, the device share interface, or another external app is handled by the service you choose.</p>
 
-  <h2>Changes</h2>
-  <p>This policy may be updated when new features (such as cloud authentication) are added.</p>
+      <h2>Data retention and deletion</h2>
+      <ul>
+        <li><strong>Logging out</strong> ends your authenticated session but does not delete local habits, notes, photos, or settings.</li>
+        <li><strong>Clear all app data</strong> in Settings removes locally stored account cache, avatars, habits, logs, targets, notes, and preferences from that device.</li>
+        <li><strong>Uninstalling the app</strong> normally removes locally stored app data from the device.</li>
+        <li><strong>Firebase account data</strong> remains until the account is deleted. Contact the developer to request account deletion.</li>
+      </ul>
 
-  <h2>Contact</h2>
-  <p>Email: <a href="mailto:ponnapuvvulasaiprasad@gmail.com">ponnapuvvulasaiprasad@gmail.com</a></p>
-</body>
+      <h2>Security</h2>
+      <p>Authentication requests are transmitted to Firebase using HTTPS/TLS. Local app data is stored in the app's device storage. No storage or transmission method is completely secure, but we limit collection and keep habit and note content on-device.</p>
+
+      <h2>Children's privacy</h2>
+      <p>The app is not directed to children under 13, and we do not knowingly collect personal information from children under 13.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>We may update this policy when app features or service providers change. The current effective date appears at the top of this page.</p>
+
+      <h2>Contact</h2>
+      <p>For privacy questions or account-deletion requests, email <a href="mailto:ponnapuvvulasaiprasad@gmail.com">ponnapuvvulasaiprasad@gmail.com</a>.</p>
+    </main>
+  </body>
 </html>

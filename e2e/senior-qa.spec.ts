@@ -271,6 +271,12 @@ test.describe('Senior QA — Settings & Data', () => {
     await page.getByLabel('Title').fill('Temp note')
     await page.getByLabel('Content').fill('Will be cleared')
     await page.getByRole('button', { name: 'Add note' }).click()
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'welcome_app_avatars',
+        JSON.stringify({ 'admin@example.com': 'data:image/png;base64,test-avatar' }),
+      )
+    })
 
     await page.getByRole('tab', { name: 'Home' }).click()
     await page.goto('/#/settings')
@@ -279,6 +285,9 @@ test.describe('Senior QA — Settings & Data', () => {
     await page.getByRole('button', { name: 'Clear data' }).click()
 
     await expect(page.getByRole('heading', { name: 'Welcome App' })).toBeVisible()
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('welcome_app_avatars')))
+      .toBeNull()
 
     await page.getByLabel('Email').fill(CREDENTIALS.email)
     await page.getByLabel('Password').fill(CREDENTIALS.password)
