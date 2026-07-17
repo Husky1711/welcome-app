@@ -11,8 +11,8 @@
   overflow: hidden;
   padding: 1.25rem 1.2rem;
   border-radius: 1.375rem;
-  background: linear-gradient(135deg, #1b4332 0%, #245c42 55%, #2d6a4f 100%);
-  box-shadow: 0 12px 32px rgb(27 67 50 / 0.24);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #245c42 55%, var(--color-primary-mid) 100%);
+  box-shadow: 0 12px 32px rgb(var(--color-primary-rgb) / 0.24);
   color: #ffffff;
 }
 
@@ -64,8 +64,8 @@
 
 .settings-hero__title {
   margin: 0;
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.375rem;
+  font-family: var(--font-display);
+  font-size: var(--text-title);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -74,7 +74,7 @@
 
 .settings-hero__tagline {
   margin: 0.3rem 0 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   line-height: 1.45;
   color: rgb(255 255 255 / 0.82);
@@ -86,7 +86,7 @@
   padding: 0.28rem 0.7rem;
   border-radius: 999px;
   background: rgb(0 0 0 / 0.18);
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -95,7 +95,7 @@
 
 .settings-panel {
   overflow: hidden;
-  border: 1px solid rgb(27 67 50 / 0.08);
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.08);
   border-radius: 1.125rem;
   background: #ffffff;
   box-shadow: 0 4px 18px rgb(15 23 42 / 0.06);
@@ -113,7 +113,7 @@
   gap: 0.75rem;
   min-height: 3.35rem;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid rgb(27 67 50 / 0.07);
+  border-bottom: 1px solid rgb(var(--color-primary-rgb) / 0.07);
 }
 
 .dark .settings-panel__row {
@@ -122,6 +122,113 @@
 
 .settings-panel__row:last-of-type {
   border-bottom: none;
+}
+
+.settings-panel__row--palette {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-block: 0.85rem 0.95rem;
+}
+
+.settings-panel__palette-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-color-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.app-color-picker__option {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.45rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.app-color-picker__option:hover {
+  background: rgb(var(--color-primary-rgb) / 0.05);
+}
+
+.app-color-picker__option:active {
+  transform: scale(0.97);
+}
+
+.app-color-picker__option:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.app-color-picker__option--selected {
+  border-color: rgb(var(--color-primary-rgb) / 0.2);
+  background: rgb(var(--color-primary-rgb) / 0.07);
+  color: var(--color-primary);
+}
+
+.app-color-picker__swatch {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 1px rgb(15 23 42 / 0.12),
+    0 3px 8px rgb(15 23 42 / 0.12);
+}
+
+.dark .app-color-picker__swatch {
+  border-color: #242424;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.18),
+    0 3px 8px rgb(0 0 0 / 0.3);
+}
+
+.app-color-picker__check {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.32);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.app-color-picker__name {
+  overflow: hidden;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-meta-sm);
+  font-weight: 600;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark .app-color-picker__option {
+  color: #a7b0a9;
+}
+
+.dark .app-color-picker__option--selected {
+  color: var(--color-primary);
 }
 
 .settings-panel__row-main {
@@ -133,11 +240,11 @@
 
 .settings-panel__icon {
   flex-shrink: 0;
-  color: #1b4332;
+  color: var(--color-primary);
 }
 
 .dark .settings-panel__icon {
-  color: #8fd4ad;
+  color: var(--color-primary);
 }
 
 .settings-panel__copy {
@@ -146,7 +253,7 @@
 
 .settings-panel__label {
   display: block;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1.25;
@@ -160,7 +267,7 @@
 .settings-panel__value {
   display: block;
   margin-top: 0.1rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   line-height: 1.35;
   color: #6b7280;
@@ -211,7 +318,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #1b4332;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -220,7 +327,7 @@
 }
 
 .dark .settings-panel__aside--link {
-  color: #8fd4ad;
+  color: var(--color-primary);
 }
 
 .settings-panel__row--action {
@@ -259,7 +366,7 @@
 
 .settings-panel__aside {
   flex-shrink: 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   color: #9ca3af;
 }
@@ -280,11 +387,11 @@
 }
 
 .settings-panel__link-row:hover .settings-panel__label {
-  color: #1b4332;
+  color: var(--color-primary);
 }
 
 .dark .settings-panel__link-row:hover .settings-panel__label {
-  color: #95d5b2;
+  color: var(--color-primary);
 }
 
 .settings-panel__chevron {
@@ -295,7 +402,7 @@
 .settings-panel__divider {
   margin: 0;
   border: none;
-  border-top: 1px solid rgb(27 67 50 / 0.1);
+  border-top: 1px solid rgb(var(--color-primary-rgb) / 0.1);
 }
 
 .dark .settings-panel__divider {
@@ -309,7 +416,7 @@
   gap: 0.4rem;
   margin: 0;
   padding: 0.85rem 1rem 1rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   line-height: 1.4;
   color: #9ca3af;
@@ -364,7 +471,7 @@
 }
 
 .settings-toggle__input:checked + .settings-toggle__track {
-  background: #1b4332;
+  background: var(--color-primary);
 }
 
 .settings-toggle__input:checked + .settings-toggle__track .settings-toggle__thumb {
@@ -372,6 +479,6 @@
 }
 
 .settings-toggle__input:focus-visible + .settings-toggle__track {
-  outline: 2px solid #1b4332;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

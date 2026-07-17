@@ -8,7 +8,7 @@
 
 .note-form-card {
   padding: 1.15rem 1.15rem 1.25rem;
-  border: 1px solid rgb(27 67 50 / 0.08);
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.08);
   border-radius: 1.125rem;
   background: #ffffff;
   box-shadow: 0 4px 18px rgb(15 23 42 / 0.06);
@@ -23,10 +23,10 @@
   width: 100%;
   resize: none;
   border-radius: 0.75rem;
-  border: 1px solid rgb(27 67 50 / 0.14);
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.14);
   background: #ffffff;
   padding: 0.7rem 0.85rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   line-height: 1.5;
   color: #1f2937;
@@ -38,9 +38,9 @@
 }
 
 .note-form__textarea:focus-visible {
-  outline: 2px solid #1b4332;
+  outline: 2px solid var(--color-primary);
   outline-offset: 0;
-  border-color: #1b4332;
+  border-color: var(--color-primary);
 }
 
 .dark .note-form__textarea {
@@ -60,7 +60,7 @@
   padding: 0.35rem;
   border: none;
   background: transparent;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
   color: #6b7280;
@@ -68,11 +68,11 @@
 }
 
 .note-form__cancel:hover {
-  color: #1b4332;
+  color: var(--color-primary);
 }
 
 .dark .note-form__cancel:hover {
-  color: #95d5b2;
+  color: var(--color-primary);
 }
 
 .notes-page__add {

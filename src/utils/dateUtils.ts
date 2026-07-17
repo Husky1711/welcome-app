@@ -60,14 +60,23 @@ export function formatShortDate(date: string): string {
   })
 }
 
+/** Compact day-card title matching Calendar design, e.g. "Thu 16". */
+export function formatDayCardLabel(date: string): string {
+  return parseLocalDate(date).toLocaleDateString(undefined, {
+    weekday: 'short',
+    day: 'numeric',
+  })
+}
+
 export function canEditHabitDate(date: string, today: string = formatLocalDate()): boolean {
   const diff = daysBetween(date, today)
   return diff >= 0 && diff <= PAST_EDIT_DAYS
 }
 
+/** Monday-first month grid (ISO week aligned). */
 export function getCalendarMonthDays(year: number, month: number): (string | null)[] {
   const firstOfMonth = new Date(year, month, 1)
-  const startOffset = firstOfMonth.getDay()
+  const startOffset = (firstOfMonth.getDay() + 6) % 7
   const daysInMonth = new Date(year, month + 1, 0).getDate()
 
   const cells: (string | null)[] = []
@@ -85,4 +94,37 @@ export function getCalendarMonthDays(year: number, month: number): (string | nul
   }
 
   return cells
+}
+
+export interface DateStringRange {
+  start: string // YYYY-MM-DD
+  end: string // YYYY-MM-DD
+}
+
+/** ISO week Mon–Sun (or single day for daily). All values are local YYYY-MM-DD strings. */
+export function getCycleWindow(
+  dateStr: string,
+  period: 'daily' | 'weekly',
+): DateStringRange {
+  if (period === 'daily') {
+    return { start: dateStr, end: dateStr }
+  }
+
+  const date = parseLocalDate(dateStr)
+  const mondayOffset = (date.getDay() + 6) % 7
+  const start = addDaysToDate(dateStr, -mondayOffset)
+  const end = addDaysToDate(start, 6)
+  return { start, end }
+}
+
+export function eachDateInRange(start: string, end: string): string[] {
+  if (start > end) return []
+
+  const dates: string[] = []
+  let cursor = start
+  while (cursor <= end) {
+    dates.push(cursor)
+    cursor = addDaysToDate(cursor, 1)
+  }
+  return dates
 }

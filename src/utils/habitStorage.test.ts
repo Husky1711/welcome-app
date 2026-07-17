@@ -8,8 +8,13 @@ import {
   getArchivedHabits,
   isHabitCompletedOnDate,
   setHabitCompleted,
+  setHabitReminderEnabled,
   toggleHabitCompleted,
   updateHabit,
+  getTargetsForHabit,
+  getActiveTarget,
+  supersedeTarget,
+  ensureHabitTargetMigration,
 } from './habitStorage'
 import { getCurrentStreak, getDayProgress, getDayStatus } from './habitStats'
 import { addDaysToDate, canEditHabitDate, formatLocalDate } from './dateUtils'
@@ -61,6 +66,21 @@ describe('habitStorage', () => {
     archiveHabit(habit.id)
 
     expect(getArchivedHabits()[0].reminderEnabled).toBe(false)
+  })
+
+  it('can toggle reminder enabled without changing other fields', () => {
+    const habit = addHabit({
+      title: 'Stretch',
+      icon: '🧘',
+      reminderEnabled: true,
+      reminderTime: '08:30',
+    })
+
+    const updated = setHabitReminderEnabled(habit.id, false)
+
+    expect(updated?.reminderEnabled).toBe(false)
+    expect(getActiveHabits()[0].reminderTime).toBe('08:30')
+    expect(getActiveHabits()[0].title).toBe('Stretch')
   })
 
   it('toggles completion for a date', () => {
@@ -143,5 +163,139 @@ describe('dateUtils', () => {
     expect(canEditHabitDate(today)).toBe(true)
     expect(canEditHabitDate(sevenDaysAgo)).toBe(true)
     expect(canEditHabitDate(eightDaysAgo)).toBe(false)
+  })
+})
+
+describe('habitStorage targets', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('automatically creates a default target when adding a habit', () => {
+    const habit = addHabit({ title: 'Meditate', icon: '🧘' })
+    const targets = getTargetsForHabit(habit.id)
+
+    expect(targets).toHaveLength(1)
+    expect(targets[0].period).toBe('daily')
+    expect(targets[0].targetFrequency).toBe(1)
+    expect(targets[0].endDate).toBeNull()
+  })
+
+  it('runs ensureHabitTargetMigration to backfill targets for existing habits', () => {
+    const habitId = 'pre-existing-habit-id'
+    const habit = {
+      id: habitId,
+      title: 'Legacy Habit',
+      icon: '👴',
+      reminderEnabled: false,
+      reminderTime: '12:00',
+      sortOrder: 0,
+      isArchived: false,
+      createdAt: '2026-07-10T12:00:00.000Z',
+    }
+    localStorage.setItem('welcome_app_habits', JSON.stringify([habit]))
+
+    ensureHabitTargetMigration()
+
+    const targets = getTargetsForHabit(habitId)
+    expect(targets).toHaveLength(1)
+    expect(targets[0].period).toBe('daily')
+    expect(targets[0].targetFrequency).toBe(1)
+    expect(targets[0].startDate).toBe('2026-07-10')
+    expect(targets[0].endDate).toBeNull()
+  })
+
+  it('supersedes target with yesterday end date for old contract and today start date for new', () => {
+    const habit = addHabit({ title: 'Exercise', icon: '💪' })
+    const today = formatLocalDate()
+    const yesterday = addDaysToDate(today, -1)
+
+    const targetsInfo = getTargetsForHabit(habit.id)
+    targetsInfo[0].startDate = yesterday
+    localStorage.setItem('welcome_app_habit_targets', JSON.stringify(targetsInfo))
+
+    supersedeTarget(habit.id, 'weekly', 4, today)
+
+    const updatedTargets = getTargetsForHabit(habit.id)
+    expect(updatedTargets).toHaveLength(2)
+
+    const closed = updatedTargets.find((t) => t.endDate !== null)
+    expect(closed).toBeDefined()
+    expect(closed?.endDate).toBe(yesterday)
+    expect(closed?.period).toBe('daily')
+
+    const active = updatedTargets.find((t) => t.endDate === null)
+    expect(active).toBeDefined()
+    expect(active?.startDate).toBe(today)
+    expect(active?.period).toBe('weekly')
+    expect(active?.targetFrequency).toBe(4)
+  })
+
+  it('updates the active target inline if same-day re-edit is performed', () => {
+    const habit = addHabit({ title: 'Write Blog', icon: '📝' })
+    const today = formatLocalDate()
+    const yesterday = addDaysToDate(today, -1)
+
+    // Force default target's startDate to yesterday for this test
+    const targetsInfo = getTargetsForHabit(habit.id)
+    targetsInfo[0].startDate = yesterday
+    localStorage.setItem('welcome_app_habit_targets', JSON.stringify(targetsInfo))
+
+    // First edit today: closes yesterday, opens today (length becomes 2)
+    supersedeTarget(habit.id, 'weekly', 3, today)
+    // Second edit today: mutates the target created today (length should STILL be 2)
+    supersedeTarget(habit.id, 'weekly', 5, today)
+
+    const targets = getTargetsForHabit(habit.id)
+    expect(targets).toHaveLength(2) // 1 default (closed) + 1 active (mutated today)
+
+    const active = targets.find((t) => t.endDate === null)
+    expect(active?.targetFrequency).toBe(5)
+  })
+
+  it('enforces frequency boundaries (daily always 1, weekly clamps 1-7)', () => {
+    const habit = addHabit({ title: 'Frequency Test', icon: '🧪' })
+    const today = formatLocalDate()
+
+    const dailyTarget = supersedeTarget(habit.id, 'daily', 5, today)
+    expect(dailyTarget.targetFrequency).toBe(1)
+
+    const weeklyMin = supersedeTarget(habit.id, 'weekly', 0, today)
+    expect(weeklyMin.targetFrequency).toBe(1)
+
+    const weeklyMax = supersedeTarget(habit.id, 'weekly', 10, today)
+    expect(weeklyMax.targetFrequency).toBe(7)
+  })
+
+  it('retrieves active targets for current or historical dates correctly', () => {
+    const habit = addHabit({ title: 'History Test', icon: '🕰️' })
+    const today = formatLocalDate()
+    const yesterday = addDaysToDate(today, -1)
+    const twoDaysAgo = addDaysToDate(today, -2)
+
+    const targets = [
+      {
+        id: 't1',
+        habitId: habit.id,
+        period: 'daily' as const,
+        targetFrequency: 1,
+        startDate: twoDaysAgo,
+        endDate: yesterday,
+      },
+      {
+        id: 't2',
+        habitId: habit.id,
+        period: 'weekly' as const,
+        targetFrequency: 3,
+        startDate: today,
+        endDate: null,
+      },
+    ]
+    localStorage.setItem('welcome_app_habit_targets', JSON.stringify(targets))
+
+    expect(getActiveTarget(habit.id, twoDaysAgo)?.period).toBe('daily')
+    expect(getActiveTarget(habit.id, yesterday)?.period).toBe('daily')
+    expect(getActiveTarget(habit.id, today)?.period).toBe('weekly')
+    expect(getActiveTarget(habit.id, addDaysToDate(twoDaysAgo, -1))).toBeNull()
   })
 })

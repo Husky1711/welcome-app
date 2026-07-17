@@ -1,6 +1,6 @@
 import { ROUTES } from './routes'
 
-export type NavIconKey = 'home' | 'today' | 'calendar' | 'habits'
+export type NavIconKey = 'home' | 'today' | 'insights' | 'habits'
 
 export const BOTTOM_NAV_TABS: ReadonlyArray<{
   to: string
@@ -9,7 +9,7 @@ export const BOTTOM_NAV_TABS: ReadonlyArray<{
 }> = [
   { to: ROUTES.WELCOME, label: 'Home', icon: 'home' },
   { to: ROUTES.TODAY, label: 'Today', icon: 'today' },
-  { to: ROUTES.CALENDAR, label: 'Calendar', icon: 'calendar' },
+  { to: ROUTES.CALENDAR, label: 'Insights', icon: 'insights' },
   { to: ROUTES.HABITS, label: 'Habits', icon: 'habits' },
 ]
 

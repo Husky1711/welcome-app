@@ -69,6 +69,7 @@ test.describe('Senior QA — Authentication', () => {
     await page.reload()
 
     await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
     await expect(page.getByText(CREDENTIALS.email)).toBeVisible()
   })
 
@@ -98,24 +99,26 @@ test.describe('Senior QA — Dashboard & Navigation', () => {
 
   test('dashboard shows all feature cards with correct counts', async ({ page }) => {
     await expect(page.getByRole('link', { name: /My Notes/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Profile/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Settings/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Open account menu' })).toBeVisible()
     await expect(page.getByText(/0 private notes/i)).toBeVisible()
   })
 
   test('home tab returns to dashboard from each section', async ({ page }) => {
-    const sections = [
-      { link: /My Notes/i, heading: 'My Notes' },
-      { link: /Profile/i, heading: 'Profile' },
-      { link: /Settings/i, heading: 'Settings' },
-    ]
+    await page.getByRole('link', { name: /My Notes/i }).click()
+    await expect(page.getByRole('heading', { name: 'My Notes' })).toBeVisible()
+    await page.getByRole('tab', { name: 'Home' }).click()
+    await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
 
-    for (const section of sections) {
-      await page.getByRole('link', { name: section.link }).click()
-      await expect(page.getByRole('heading', { name: section.heading })).toBeVisible()
-      await page.getByRole('tab', { name: 'Home' }).click()
-      await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
-    }
+    await page.getByRole('button', { name: 'Open account menu' }).click()
+    await page.getByRole('link', { name: 'Profile' }).click()
+    await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
+    await page.getByRole('tab', { name: 'Home' }).click()
+    await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
+
+    await page.goto('/#/settings')
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+    await page.getByRole('tab', { name: 'Home' }).click()
+    await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
   })
 
   test('direct URL navigation works when authenticated', async ({ page }) => {
@@ -199,7 +202,8 @@ test.describe('Senior QA — Profile', () => {
   test.beforeEach(async ({ page }) => {
     await clearAppStorage(page)
     await login(page)
-    await page.getByRole('link', { name: /Profile/i }).click()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
+    await page.getByRole('link', { name: 'Profile' }).click()
   })
 
   test('email field is read-only', async ({ page }) => {
@@ -232,7 +236,7 @@ test.describe('Senior QA — Settings & Data', () => {
   test.beforeEach(async ({ page }) => {
     await clearAppStorage(page)
     await login(page)
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.goto('/#/settings')
   })
 
   test('theme toggle switches light and dark', async ({ page }) => {
@@ -269,7 +273,7 @@ test.describe('Senior QA — Settings & Data', () => {
     await page.getByRole('button', { name: 'Add note' }).click()
 
     await page.getByRole('tab', { name: 'Home' }).click()
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.goto('/#/settings')
     await page.getByRole('button', { name: 'Clear all app data' }).click()
     await expect(page.getByRole('alertdialog', { name: 'Clear all app data?' })).toBeVisible()
     await page.getByRole('button', { name: 'Clear data' }).click()
@@ -303,7 +307,7 @@ test.describe('Senior QA — Logout & Security', () => {
   test('logout from settings clears session', async ({ page }) => {
     await clearAppStorage(page)
     await login(page)
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
     await page.getByRole('button', { name: 'Log out of your account' }).click()
 
     await expect(page.getByRole('heading', { name: 'Welcome App' })).toBeVisible()

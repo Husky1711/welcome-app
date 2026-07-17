@@ -1,8 +1,10 @@
 import { STORAGE_KEYS } from '../constants/auth'
-import type { AppSettings, ThemeMode } from '../types/settings'
+import { DEFAULT_APP_COLOR, isAppColor } from '../constants/appColors'
+import type { AppColor, AppSettings, ThemeMode } from '../types/settings'
 
 const DEFAULT_SETTINGS: AppSettings = {
   theme: 'light',
+  appColor: DEFAULT_APP_COLOR,
 }
 
 export function getStoredSettings(): AppSettings {
@@ -15,14 +17,23 @@ export function getStoredSettings(): AppSettings {
       return DEFAULT_SETTINGS
     }
 
-    return parsed
+    return {
+      theme: parsed.theme,
+      appColor: isAppColor(parsed.appColor) ? parsed.appColor : DEFAULT_APP_COLOR,
+    }
   } catch {
     return DEFAULT_SETTINGS
   }
 }
 
 export function setStoredTheme(theme: ThemeMode): AppSettings {
-  const settings: AppSettings = { theme }
+  const settings: AppSettings = { ...getStoredSettings(), theme }
+  localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings))
+  return settings
+}
+
+export function setStoredAppColor(appColor: AppColor): AppSettings {
+  const settings: AppSettings = { ...getStoredSettings(), appColor }
   localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings))
   return settings
 }
@@ -31,6 +42,8 @@ export function clearStoredSettings(): void {
   localStorage.removeItem(STORAGE_KEYS.SETTINGS)
 }
 
-export function applyThemeToDocument(theme: ThemeMode): void {
+export function applySettingsToDocument(settings: AppSettings): void {
+  const { theme, appColor } = settings
   document.documentElement.classList.toggle('dark', theme === 'dark')
+  document.documentElement.dataset.appColor = appColor
 }

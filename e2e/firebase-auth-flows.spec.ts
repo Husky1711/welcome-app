@@ -18,6 +18,18 @@ function uniqueEmail() {
   return `firebase.tester.${Date.now()}@example.com`
 }
 
+async function expectSignedIn(
+  page: import('@playwright/test').Page,
+  email: string,
+) {
+  await expect(page.getByRole('heading', { name: /Welcome,/ })).toBeVisible({
+    timeout: 15000,
+  })
+  await page.getByRole('button', { name: 'Open account menu' }).click()
+  await expect(page.getByText(email)).toBeVisible()
+  await page.getByRole('button', { name: 'Dismiss' }).click()
+}
+
 test.describe('Firebase auth flows — emulator', () => {
   test.beforeEach(async ({ page }) => {
     await clearFirebaseEmulator()
@@ -38,10 +50,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
 
-    await expect(page.getByText('You are signed in to your personal space.')).toBeVisible({
-      timeout: 15000,
-    })
-    await expect(page.getByText(email)).toBeVisible()
+    await expectSignedIn(page, email)
   })
 
   test('sign-in works with an existing Firebase account', async ({ page }) => {
@@ -53,7 +62,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Password', { exact: true }).fill(password)
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
-    await expect(page.getByText(email)).toBeVisible({ timeout: 15000 })
+    await expectSignedIn(page, email)
 
     await page.goto('/#/settings')
     await page.getByRole('button', { name: 'Log out of your account' }).click()
@@ -63,10 +72,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Password').fill(password)
     await page.getByRole('button', { name: 'Sign in' }).click()
 
-    await expect(page.getByText('You are signed in to your personal space.')).toBeVisible({
-      timeout: 15000,
-    })
-    await expect(page.getByText(email)).toBeVisible()
+    await expectSignedIn(page, email)
   })
 
   test('wrong password shows Firebase error on sign-in', async ({ page }) => {
@@ -78,7 +84,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Password', { exact: true }).fill(password)
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
-    await expect(page.getByText(email)).toBeVisible({ timeout: 15000 })
+    await expectSignedIn(page, email)
 
     await page.goto('/#/settings')
     await page.getByRole('button', { name: 'Log out of your account' }).click()
@@ -101,7 +107,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Password', { exact: true }).fill(password)
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
-    await expect(page.getByText(email)).toBeVisible({ timeout: 15000 })
+    await expectSignedIn(page, email)
 
     await page.goto('/#/settings')
     await page.getByRole('button', { name: 'Log out of your account' }).click()
@@ -126,7 +132,7 @@ test.describe('Firebase auth flows — emulator', () => {
     await page.getByLabel('Password', { exact: true }).fill(password)
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
-    await expect(page.getByText(email)).toBeVisible({ timeout: 15000 })
+    await expectSignedIn(page, email)
 
     await page.goto('/#/settings')
     await page.getByRole('button', { name: 'Log out of your account' }).click()

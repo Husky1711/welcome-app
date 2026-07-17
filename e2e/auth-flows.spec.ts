@@ -18,7 +18,8 @@ test.describe('Auth flows — user testing', () => {
     await page.getByLabel('Password').fill(ADMIN.password)
     await page.getByRole('button', { name: 'Sign in' }).click()
 
-    await expect(page.getByText('You are signed in to your personal space.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Welcome, admin' })).toBeVisible()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
     await expect(page.getByText(ADMIN.email)).toBeVisible()
   })
 
@@ -34,7 +35,8 @@ test.describe('Auth flows — user testing', () => {
     await page.getByLabel('Confirm password').fill(password)
     await page.getByRole('button', { name: 'Create account' }).click()
 
-    await expect(page.getByText('You are signed in to your personal space.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Welcome, tester\./ })).toBeVisible()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
     await expect(page.getByText(uniqueEmail)).toBeVisible()
   })
 

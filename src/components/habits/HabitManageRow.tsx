@@ -1,50 +1,66 @@
 import type { Habit } from '../../types/habit'
 import { formatReminderTimeLabel } from '../../services/habitReminderService'
-import { BellReminderIcon } from '../icons/NavIcons'
+import { getActiveTarget } from '../../utils/habitStorage'
 import { HabitIcon } from './HabitIcon'
 
 interface HabitManageRowProps {
   habit: Habit
   onEdit: (habit: Habit) => void
-  onArchive: (habit: Habit) => void
 }
 
-export function HabitManageRow({ habit, onEdit, onArchive }: HabitManageRowProps) {
+function ChevronIcon() {
   return (
-    <li className="habit-card">
-      <div className="habit-card__icon-wrap">
-        <HabitIcon icon={habit.icon} size="md" />
-      </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M9 5.5 15.5 12 9 18.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
-      <div className="habit-card__body">
-        <h3 className="habit-card__title">{habit.title}</h3>
-        {habit.reminderEnabled ? (
-          <span className="habit-card__reminder">
-            <BellReminderIcon />
-            Reminder {formatReminderTimeLabel(habit.reminderTime)}
+export function HabitManageRow({ habit, onEdit }: HabitManageRowProps) {
+  const target = getActiveTarget(habit.id)
+  const goalLabel =
+    target?.period === 'weekly'
+      ? `Weekly · ${target.targetFrequency}×`
+      : 'Daily · 1×'
+
+  const reminderLabel = habit.reminderEnabled
+    ? formatReminderTimeLabel(habit.reminderTime)
+    : null
+
+  return (
+    <li className="habit-sheet__row">
+      <button
+        type="button"
+        className="habit-sheet__row-main"
+        onClick={() => onEdit(habit)}
+        aria-label={`Edit habit ${habit.title}`}
+      >
+        <span className="habit-sheet__icon" aria-hidden="true">
+          <HabitIcon icon={habit.icon} size="md" />
+        </span>
+
+        <span className="habit-sheet__body">
+          <span className="habit-sheet__title">{habit.title}</span>
+          <span className="habit-sheet__meta">
+            <span>{goalLabel}</span>
+            {reminderLabel ? (
+              <span className="habit-card__reminder habit-sheet__reminder">
+                · {reminderLabel}
+              </span>
+            ) : null}
           </span>
-        ) : null}
-      </div>
+        </span>
 
-      <div className="habit-card__actions">
-        <button
-          type="button"
-          className="habit-card__action habit-card__action--edit"
-          onClick={() => onEdit(habit)}
-          aria-label={`Edit habit ${habit.title}`}
-        >
-          Edit
-        </button>
-        <hr className="habit-card__action-divider" aria-hidden="true" />
-        <button
-          type="button"
-          className="habit-card__action habit-card__action--archive"
-          onClick={() => onArchive(habit)}
-          aria-label={`Archive habit ${habit.title}`}
-        >
-          Archive
-        </button>
-      </div>
+        <span className="habit-sheet__chevron" aria-hidden="true">
+          <ChevronIcon />
+        </span>
+      </button>
     </li>
   )
 }

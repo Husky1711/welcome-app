@@ -43,7 +43,8 @@ test('capture Play Store screenshots', async ({ page }) => {
   })
 
   await page.getByRole('tab', { name: 'Home' }).click()
-  await page.getByRole('link', { name: /Profile/i }).click()
+  await page.getByRole('button', { name: 'Open account menu' }).click()
+  await page.getByRole('link', { name: 'Profile' }).click()
 
   await page.screenshot({
     path: join(OUTPUT_DIR, '04-profile-screen.png'),
@@ -51,7 +52,7 @@ test('capture Play Store screenshots', async ({ page }) => {
   })
 
   await page.getByRole('tab', { name: 'Home' }).click()
-  await page.getByRole('link', { name: /Settings/i }).click()
+  await page.goto('/#/settings')
 
   await page.screenshot({
     path: join(OUTPUT_DIR, '05-settings-screen.png'),

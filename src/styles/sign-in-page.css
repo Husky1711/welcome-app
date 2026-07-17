@@ -1,7 +1,7 @@
 :root {
   --color-bg: #e8e8e8;
-  --color-green: #1b4332;
-  --color-green-hover: #153628;
+  --color-green: var(--color-primary);
+  --color-green-hover: var(--color-primary-dark);
   --color-white: #ffffff;
   --color-text: #111111;
   --color-muted: #8c8c8c;
@@ -9,8 +9,6 @@
   --color-chip-text: #333333;
   --color-border: #dcdcdc;
   --color-placeholder: #b3b3b3;
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
   --radius-card: 44px;
   --radius-input: 12px;
   --card-gutter: 6%;
@@ -97,7 +95,7 @@
 }
 
 .hero__title {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--color-green);

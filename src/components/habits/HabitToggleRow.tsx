@@ -41,7 +41,9 @@ export function HabitToggleRow({ habit, completed, streak, onToggle }: HabitTogg
           {habit.title}
         </span>
         {streak > 0 && (
-          <span className="text-xs text-primary">🔥 {streak} day streak</span>
+          <span className="type-stat-sm text-primary">
+            {streak} day streak
+          </span>
         )}
       </span>
     </button>

@@ -1,0 +1,139 @@
+/* Typography system — Welcome App */
+
+:root {
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-num: 'Outfit', 'DM Sans', system-ui, sans-serif;
+
+  /* Scale (16px root) */
+  --text-display: 2rem; /* 32 — page heroes */
+  --text-title: 1.25rem; /* 20 — section titles */
+  --text-title-sm: 1.125rem; /* 18 — compact headers */
+  --text-body: 0.875rem; /* 14 — default copy */
+  --text-body-lg: 0.9375rem; /* 15 — strong labels / rows */
+  --text-meta: 0.75rem; /* 12 — kickers, helpers */
+  --text-meta-sm: 0.6875rem; /* 11 — floor for captions */
+
+  --text-stat-lg: 1.75rem; /* 28 — rings / insight headlines */
+  --text-stat-md: 1.25rem; /* 20 — mid metrics */
+  --text-stat-sm: 0.875rem; /* 14 — inline % / streaks */
+
+  --leading-display: 1.1;
+  --leading-title: 1.2;
+  --leading-body: 1.45;
+  --leading-meta: 1.35;
+
+  --tracking-display: -0.02em;
+  --tracking-title: -0.015em;
+  --tracking-meta: 0.04em;
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
+}
+
+.type-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 700;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--leading-title);
+}
+
+.type-title-sm {
+  font-family: var(--font-display);
+  font-size: var(--text-title-sm);
+  font-weight: 700;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--leading-title);
+}
+
+.type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: var(--leading-body);
+}
+
+.type-body-strong {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  font-weight: 600;
+  line-height: var(--leading-body);
+}
+
+.type-meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  line-height: var(--leading-meta);
+}
+
+.type-stat-lg,
+.type-stat-md,
+.type-stat-sm {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+
+.type-stat-lg {
+  font-size: var(--text-stat-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.type-stat-md {
+  font-size: var(--text-stat-md);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.type-stat-sm {
+  font-size: var(--text-stat-sm);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Progress ring center type */
+.progress-ring__fraction {
+  margin: 0;
+  font-family: var(--font-num);
+  font-size: var(--text-stat-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.progress-ring__fraction--sm {
+  font-size: var(--text-title-sm);
+}
+
+.progress-ring__fraction--lg,
+.progress-ring__fraction--xl {
+  font-size: var(--text-stat-lg);
+}
+
+.progress-ring__percent {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-num);
+  font-size: var(--text-meta-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  line-height: 1.2;
+}
+
+.progress-ring__percent--md,
+.progress-ring__percent--lg,
+.progress-ring__percent--xl {
+  font-size: var(--text-meta);
+}

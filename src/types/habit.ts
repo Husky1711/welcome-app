@@ -37,3 +37,15 @@ export interface HabitSuggestion {
   title: string
   icon: string
 }
+
+export type TargetPeriod = 'daily' | 'weekly'
+
+export interface HabitTarget {
+  id: string
+  habitId: string
+  period: TargetPeriod
+  targetFrequency: number
+  startDate: string // YYYY-MM-DD
+  endDate: string | null // null = active
+}
+

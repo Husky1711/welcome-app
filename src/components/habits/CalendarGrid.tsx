@@ -1,35 +1,19 @@
 import type { DayStatus } from '../../types/habit'
 import { BackChevronIcon } from '../icons/NavIcons'
 import { parseLocalDate } from '../../utils/dateUtils'
-import { getDayProgress } from '../../utils/habitStats'
 
-const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
+const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
 
 interface CalendarGridProps {
   monthLabel: string
   days: (string | null)[]
   dayStatuses: Map<string, DayStatus>
   selectedDate: string | null
+  highlightDates?: Set<string>
   today: string
   onSelectDate: (date: string) => void
   onPreviousMonth: () => void
   onNextMonth: () => void
-}
-
-function getBarPercent(date: string, status: DayStatus, today: string): number {
-  if (date > today) {
-    return 0
-  }
-
-  if (status === 'full') {
-    return 100
-  }
-
-  if (status === 'partial') {
-    return getDayProgress(date).percent
-  }
-
-  return 0
 }
 
 export function CalendarGrid({
@@ -37,54 +21,55 @@ export function CalendarGrid({
   days,
   dayStatuses,
   selectedDate,
+  highlightDates,
   today,
   onSelectDate,
   onPreviousMonth,
   onNextMonth,
 }: CalendarGridProps) {
   return (
-    <section className="calendar-ledger" aria-label="Monthly habit calendar">
-      <div className="calendar-ledger__header">
+    <section className="calendar-month" aria-label="Monthly habit calendar">
+      <div className="calendar-month__header">
         <button
           type="button"
           onClick={onPreviousMonth}
           aria-label="Previous month"
-          className="calendar-ledger__nav-btn"
+          className="calendar-month__nav-btn"
         >
           <BackChevronIcon size={18} />
         </button>
 
-        <h2 className="calendar-ledger__title">{monthLabel}</h2>
+        <h2 className="calendar-month__title">{monthLabel}</h2>
 
         <button
           type="button"
           onClick={onNextMonth}
           aria-label="Next month"
-          className="calendar-ledger__nav-btn calendar-ledger__nav-btn--next"
+          className="calendar-month__nav-btn calendar-month__nav-btn--next"
         >
           <BackChevronIcon size={18} />
         </button>
       </div>
 
-      <div className="calendar-ledger__weekdays" aria-hidden="true">
+      <div className="calendar-month__weekdays" aria-hidden="true">
         {WEEKDAY_LABELS.map((label) => (
           <div key={label}>{label}</div>
         ))}
       </div>
 
-      <div className="calendar-ledger__grid">
+      <div className="calendar-month__grid">
         {days.map((date, index) => {
           if (!date) {
-            return <div key={`empty-${index}`} aria-hidden="true" />
+            return <div key={`empty-${index}`} className="calendar-month__cell-empty" aria-hidden="true" />
           }
 
           const dayNumber = parseLocalDate(date).getDate()
           const status = dayStatuses.get(date) ?? 'empty'
           const isToday = date === today
-          const isSelected = date === selectedDate
+          const isSelected = selectedDate !== null && date === selectedDate
+          const isHighlighted = Boolean(highlightDates?.has(date)) && !isSelected
           const isFuture = date > today
-          const barPercent = getBarPercent(date, status, today)
-          const isPartial = status === 'partial' && barPercent > 0 && barPercent < 100
+          const isLogged = !isFuture && (status === 'full' || status === 'partial')
 
           return (
             <button
@@ -94,44 +79,22 @@ export function CalendarGrid({
               aria-label={`${date}, ${status} completion${isToday ? ', today' : ''}`}
               aria-pressed={isSelected}
               className={[
-                'calendar-ledger__cell',
-                isToday ? 'calendar-ledger__cell--today' : '',
-                isSelected ? 'calendar-ledger__cell--selected' : '',
-                isFuture ? 'calendar-ledger__cell--future' : '',
+                'calendar-month__cell',
+                isLogged ? 'calendar-month__cell--logged' : '',
+                status === 'full' ? 'calendar-month__cell--full' : '',
+                status === 'partial' ? 'calendar-month__cell--partial' : '',
+                isToday ? 'calendar-month__cell--today' : '',
+                isSelected ? 'calendar-month__cell--selected' : '',
+                isHighlighted ? 'calendar-month__cell--range' : '',
+                isFuture ? 'calendar-month__cell--future' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
             >
-              <span className="calendar-ledger__day">{dayNumber}</span>
-              <span className="calendar-ledger__bar" aria-hidden="true">
-                <span
-                  className={[
-                    'calendar-ledger__bar-fill',
-                    isPartial ? 'calendar-ledger__bar-fill--partial' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  style={{ width: `${barPercent}%` }}
-                />
-              </span>
+              <span className="calendar-month__day">{dayNumber}</span>
             </button>
           )
         })}
-      </div>
-
-      <div className="calendar-ledger__legend" aria-label="Completion legend">
-        <span className="calendar-ledger__legend-item">
-          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--full" />
-          All done
-        </span>
-        <span className="calendar-ledger__legend-item">
-          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--partial" />
-          Partial
-        </span>
-        <span className="calendar-ledger__legend-item">
-          <span className="calendar-ledger__legend-bar calendar-ledger__legend-bar--none" />
-          None
-        </span>
       </div>
     </section>
   )

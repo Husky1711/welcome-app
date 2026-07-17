@@ -81,6 +81,32 @@ export function CalendarNavIcon({ size = 22, className = '' }: IconProps) {
   )
 }
 
+export function InsightsNavIcon({ size = 22, className = '' }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        d="M5 19V13M10 19V8M15 19V11M20 19V5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M4 19h16"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 export function HabitsNavIcon({ size = 22, className = '' }: IconProps) {
   return (
     <svg
@@ -167,13 +193,14 @@ export function SettingsFeatureIcon({ size = 20, className = '' }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
       <path
-        d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+        d="M4 7h10M18 7h2M12 17h8M4 17h4"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
+      <circle cx="16" cy="7" r="2.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="10" cy="17" r="2.25" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   )
 }

@@ -11,8 +11,8 @@
   overflow: hidden;
   padding: 1.5rem 1.25rem 1.35rem;
   border-radius: 1.25rem;
-  background: linear-gradient(145deg, #1b4332 0%, #245c42 52%, #2d6a4f 100%);
-  box-shadow: 0 10px 28px rgb(27 67 50 / 0.22);
+  background: linear-gradient(145deg, var(--color-primary) 0%, #245c42 52%, var(--color-primary-mid) 100%);
+  box-shadow: 0 10px 28px rgb(var(--color-primary-rgb) / 0.22);
   color: #ffffff;
 }
 
@@ -75,11 +75,11 @@
   height: 4.25rem;
   overflow: hidden;
   border-radius: 999px;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #1b4332;
+  color: var(--color-primary);
   background: rgb(255 255 255 / 0.96);
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.16);
 }
@@ -99,13 +99,13 @@
   width: 1.35rem;
   height: 1.35rem;
   border-radius: 999px;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 1;
-  color: #1b4332;
+  color: var(--color-primary);
   background: #ffffff;
-  border: 2px solid #1b4332;
+  border: 2px solid var(--color-primary);
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.18);
 }
 
@@ -113,7 +113,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 600;
   color: rgb(255 255 255 / 0.82);
@@ -134,7 +134,7 @@
 .profile-avatar-block__error {
   margin: 0.15rem 0 0;
   max-width: 5.5rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   line-height: 1.35;
   text-align: center;
@@ -147,7 +147,7 @@
 
 .profile-identity__name {
   margin: 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.375rem;
   font-weight: 700;
   line-height: 1.15;
@@ -157,7 +157,7 @@
 
 .profile-identity__email {
   margin: 0.35rem 0 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: rgb(255 255 255 / 0.86);
   word-break: break-all;
@@ -165,7 +165,7 @@
 
 .profile-identity__member-since {
   margin: 0.45rem 0 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -177,7 +177,7 @@
   position: relative;
   z-index: 1;
   margin: 0.85rem 0 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   line-height: 1.4;
   color: #ffd6d6;
@@ -189,7 +189,7 @@
   margin-top: 0.75rem;
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -214,19 +214,19 @@
 
 .profile-card__title {
   margin: 0 0 0.35rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #1b4332;
+  color: var(--color-primary);
 }
 
 .dark .profile-card__title {
-  color: #95d5b2;
+  color: var(--color-primary);
 }
 
 .profile-card__hint {
   margin: 0 0 1rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   line-height: 1.45;
   color: #6b7280;
@@ -251,7 +251,7 @@
 }
 
 .profile-form__count {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   color: #9ca3af;
 }
@@ -266,19 +266,19 @@
   padding: 0.9rem 1rem;
   border: none;
   border-radius: 0.875rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 700;
   color: #ffffff;
-  background: #1b4332;
-  box-shadow: 0 6px 16px rgb(27 67 50 / 0.24);
+  background: var(--color-primary);
+  box-shadow: 0 6px 16px rgb(var(--color-primary-rgb) / 0.24);
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
 .profile-save-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgb(27 67 50 / 0.3);
+  box-shadow: 0 8px 20px rgb(var(--color-primary-rgb) / 0.3);
 }
 
 .profile-save-btn:disabled {
@@ -313,7 +313,7 @@
 }
 
 .profile-details dt {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   font-weight: 500;
   color: #6b7280;
@@ -326,7 +326,7 @@
 .profile-details dd {
   margin: 0;
   max-width: 62%;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   font-weight: 600;
   color: #111827;
@@ -346,16 +346,16 @@
   padding: 0.85rem 0.15rem 0;
   border: none;
   background: transparent;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
-  color: #1b4332;
+  color: var(--color-primary);
   text-decoration: none;
   cursor: pointer;
 }
 
 .dark .profile-link-btn {
-  color: #95d5b2;
+  color: var(--color-primary);
 }
 
 .profile-link-btn:hover {
@@ -378,8 +378,8 @@
   border-radius: 1rem;
   text-decoration: none;
   color: inherit;
-  background: linear-gradient(145deg, rgb(27 67 50 / 0.06) 0%, rgb(27 67 50 / 0.03) 100%);
-  border: 1px solid rgb(27 67 50 / 0.08);
+  background: linear-gradient(145deg, rgb(var(--color-primary-rgb) / 0.06) 0%, rgb(var(--color-primary-rgb) / 0.03) 100%);
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -390,7 +390,7 @@
 
 .profile-space__snapshot:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgb(27 67 50 / 0.08);
+  box-shadow: 0 8px 20px rgb(var(--color-primary-rgb) / 0.08);
 }
 
 .profile-space__copy {
@@ -400,20 +400,20 @@
 
 .profile-space__message {
   margin: 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.0625rem;
   font-weight: 600;
   line-height: 1.35;
-  color: #1b4332;
+  color: var(--color-primary);
 }
 
 .dark .profile-space__message {
-  color: #d8f3dc;
+  color: var(--color-primary-soft-strong);
 }
 
 .profile-space__detail {
   margin: 0.35rem 0 0.85rem;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: #6b7280;
 }
@@ -435,7 +435,7 @@
 
 .profile-space__stat dt {
   margin: 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -445,9 +445,10 @@
 
 .profile-space__stat dd {
   margin: 0.2rem 0 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 700;
+  font-family: var(--font-num);
+  font-size: var(--text-stat-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: #111827;
 }
 

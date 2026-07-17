@@ -11,10 +11,10 @@ interface ProgressRingProps {
 }
 
 const SIZE_CONFIG = {
-  sm: { radius: 36, stroke: 7, fractionClass: 'text-lg', percentClass: 'text-[10px]' },
-  md: { radius: 52, stroke: 10, fractionClass: 'text-2xl', percentClass: 'text-xs' },
-  lg: { radius: 50, stroke: 9, fractionClass: 'text-xl', percentClass: 'text-[11px]' },
-  xl: { radius: 76, stroke: 11, fractionClass: 'text-2xl', percentClass: 'text-xs' },
+  sm: { radius: 36, stroke: 7 },
+  md: { radius: 52, stroke: 10 },
+  lg: { radius: 50, stroke: 9 },
+  xl: { radius: 76, stroke: 11 },
 } as const
 
 export function ProgressRing({
@@ -26,11 +26,23 @@ export function ProgressRing({
   center = 'stats',
   children,
 }: ProgressRingProps) {
-  const { radius, stroke, fractionClass, percentClass } = SIZE_CONFIG[size]
+  const { radius, stroke } = SIZE_CONFIG[size]
   const normalizedRadius = radius - stroke / 2
   const circumference = normalizedRadius * 2 * Math.PI
   const strokeDashoffset = circumference - (percent / 100) * circumference
   const isLight = tone === 'light'
+
+  const fractionClass =
+    size === 'sm'
+      ? 'progress-ring__fraction progress-ring__fraction--sm'
+      : size === 'lg' || size === 'xl'
+        ? 'progress-ring__fraction progress-ring__fraction--lg'
+        : 'progress-ring__fraction'
+
+  const percentClass =
+    size === 'sm'
+      ? 'progress-ring__percent'
+      : 'progress-ring__percent progress-ring__percent--md'
 
   return (
     <div
@@ -66,18 +78,18 @@ export function ProgressRing({
         />
       </svg>
 
-      <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
         {center === 'custom' && children ? (
           children
         ) : (
           <>
             <p
-              className={`${fractionClass} font-semibold ${isLight ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}
+              className={`${fractionClass} ${isLight ? 'text-white' : 'text-[#1b4332] dark:text-[#d8f3dc]'}`}
             >
               {completed}/{total}
             </p>
             <p
-              className={`${percentClass} ${isLight ? 'text-white/75' : 'text-gray-500 dark:text-gray-400'}`}
+              className={`${percentClass} ${isLight ? 'text-white/75' : 'text-[#6b7c72] dark:text-[#a7b0a9]'}`}
             >
               {percent}%
             </p>

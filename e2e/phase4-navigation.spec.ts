@@ -26,14 +26,14 @@ test.describe('Phase 4: Bottom nav & dashboard widget', () => {
     await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible()
     await expect(bottomNav.getByRole('tab', { name: 'Today' })).toHaveAttribute('aria-selected', 'true')
 
-    await bottomNav.getByRole('tab', { name: 'Calendar' }).click()
-    await expect(page.getByRole('heading', { name: 'Calendar' })).toBeVisible()
+    await bottomNav.getByRole('tab', { name: 'Insights' }).click()
+    await expect(page.getByRole('heading', { name: 'Insights' }).first()).toBeVisible()
 
     await bottomNav.getByRole('tab', { name: 'Habits' }).click()
     await expect(page.getByRole('heading', { name: 'Habits' })).toBeVisible()
 
     await bottomNav.getByRole('tab', { name: 'Home' }).click()
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.goto('/#/settings')
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
     await expect(bottomNav).toBeVisible()
   })
@@ -43,7 +43,18 @@ test.describe('Phase 4: Bottom nav & dashboard widget', () => {
 
     await page.getByRole('link', { name: /Daily Tracker/i }).click()
     await page.getByRole('button', { name: /Meditate 10 min/i }).click()
-    await page.getByRole('button', { name: /Meditate 10 min, not completed/i }).click()
+
+    const todayDate = await page.evaluate(() => {
+      const date = new Date()
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    })
+
+    await page
+      .getByRole('button', { name: new RegExp(`Meditate 10 min, ${todayDate}, not (done|completed)`) })
+      .click()
 
     await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByRole('heading', { name: /Welcome, admin/i })).toBeVisible()
@@ -54,9 +65,25 @@ test.describe('Phase 4: Bottom nav & dashboard widget', () => {
   test('settings shows version 2.0.0', async ({ page }) => {
     await signIn(page)
 
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.goto('/#/settings')
     await expect(
-      page.locator('.settings-panel__row', { hasText: 'Version' }).locator('.settings-panel__aside'),
+      page.locator('.settings-panel__row', { hasText: 'About' }).locator('.settings-panel__aside'),
     ).toHaveText('2.0.0')
+  })
+
+  test('app color changes immediately and persists', async ({ page }) => {
+    await signIn(page)
+    await page.goto('/#/settings')
+
+    await page.getByRole('radio', { name: 'Plum' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-app-color', 'plum')
+    await expect(page.getByText('Plum', { exact: true }).first()).toBeVisible()
+
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-app-color', 'plum')
+    await expect(page.getByRole('radio', { name: 'Plum' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
   })
 })

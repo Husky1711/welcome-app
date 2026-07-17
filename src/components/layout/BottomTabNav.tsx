@@ -1,16 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { BOTTOM_NAV_TABS, type NavIconKey } from '../../constants/navigation'
 import {
-  CalendarNavIcon,
   HabitsNavIcon,
   HomeNavIcon,
+  InsightsNavIcon,
   TodayNavIcon,
 } from '../icons/NavIcons'
 
 const NAV_ICONS: Record<NavIconKey, typeof HomeNavIcon> = {
   home: HomeNavIcon,
   today: TodayNavIcon,
-  calendar: CalendarNavIcon,
+  insights: InsightsNavIcon,
   habits: HabitsNavIcon,
 }
 

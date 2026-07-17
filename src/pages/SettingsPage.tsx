@@ -4,13 +4,15 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import {
   SettingsChevronIcon,
   SettingsDeviceIcon,
+  SettingsFeedbackIcon,
   SettingsInfoIcon,
   SettingsLogOutIcon,
-  SettingsMailIcon,
   SettingsShieldIcon,
+  SettingsStarIcon,
   SettingsSunIcon,
   SettingsTrashIcon,
 } from '../components/settings/SettingsIcons'
+import { APP_COLOR_OPTIONS } from '../constants/appColors'
 import { APP_INFO } from '../constants/auth'
 import { ROUTES } from '../constants/routes'
 import { useSettings } from '../contexts/SettingsContext'
@@ -20,15 +22,23 @@ import { AppLayout } from '../layouts/AppLayout'
 import signInLogo from '../assets/sign-in-logo.png'
 import '../styles/settings-page.css'
 
+const FEEDBACK_MAILTO = `mailto:${APP_INFO.contactEmail}?subject=${encodeURIComponent(
+  'Welcome App feedback',
+)}`
+
 export function SettingsPage() {
   const navigate = useNavigate()
   const { logout } = useAuth()
-  const { settings, toggleTheme } = useSettings()
+  const { settings, setAppColor, toggleTheme } = useSettings()
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [showAbout, setShowAbout] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const isDark = settings.theme === 'dark'
+  const selectedAppColor =
+    APP_COLOR_OPTIONS.find((option) => option.id === settings.appColor) ??
+    APP_COLOR_OPTIONS[0]
 
   async function handleClearData() {
     setIsClearing(true)
@@ -55,7 +65,7 @@ export function SettingsPage() {
   return (
     <AppLayout
       title="Settings"
-      subtitle="Theme, privacy, and app data."
+      subtitle="Theme, feedback, and app data."
       showBrand
       align="top"
     >
@@ -68,7 +78,7 @@ export function SettingsPage() {
             </div>
             <div className="settings-hero__copy">
               <h2 className="settings-hero__title">{APP_INFO.name}</h2>
-              <p className="settings-hero__tagline">Your day. Your work. Your space.</p>
+              <p className="settings-hero__tagline">{APP_INFO.tagline}</p>
               <span className="settings-hero__version">v{APP_INFO.version}</span>
             </div>
           </div>
@@ -79,7 +89,7 @@ export function SettingsPage() {
             <div className="settings-panel__row-main">
               <SettingsSunIcon className="settings-panel__icon" />
               <div className="settings-panel__copy">
-                <span className="settings-panel__label">Appearance</span>
+                <span className="settings-panel__label">Theme</span>
                 <span className="settings-panel__value">{isDark ? 'Dark mode' : 'Light mode'}</span>
               </div>
             </div>
@@ -98,25 +108,91 @@ export function SettingsPage() {
             </label>
           </div>
 
-          <div className="settings-panel__row">
-            <div className="settings-panel__row-main">
-              <SettingsInfoIcon className="settings-panel__icon" />
-              <span className="settings-panel__label settings-panel__label--inline">Version</span>
+          <div className="settings-panel__row settings-panel__row--palette">
+            <div className="settings-panel__palette-heading">
+              <div className="settings-panel__copy">
+                <span className="settings-panel__label">App color</span>
+                <span className="settings-panel__value">{selectedAppColor.label}</span>
+              </div>
             </div>
-            <span className="settings-panel__aside">{APP_INFO.version}</span>
+
+            <div
+              className="app-color-picker"
+              role="radiogroup"
+              aria-label="App color"
+            >
+              {APP_COLOR_OPTIONS.map((option) => {
+                const selected = option.id === settings.appColor
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-label={option.label}
+                    className={`app-color-picker__option ${
+                      selected ? 'app-color-picker__option--selected' : ''
+                    }`}
+                    onClick={() => setAppColor(option.id)}
+                  >
+                    <span
+                      className="app-color-picker__swatch"
+                      style={{
+                        background: `linear-gradient(135deg, ${option.swatches[0]}, ${option.swatches[1]})`,
+                      }}
+                      aria-hidden="true"
+                    >
+                      {selected ? (
+                        <span className="app-color-picker__check">✓</span>
+                      ) : null}
+                    </span>
+                    <span className="app-color-picker__name">{option.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           <div className="settings-panel__row">
-            <div className="settings-panel__row-main">
-              <SettingsMailIcon className="settings-panel__icon" />
-              <span className="settings-panel__label settings-panel__label--inline">Contact</span>
-            </div>
             <a
-              href={`mailto:${APP_INFO.contactEmail}`}
-              className="settings-panel__aside settings-panel__aside--link"
+              href={APP_INFO.playStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="settings-panel__link-row"
             >
-              {APP_INFO.contactEmail}
+              <div className="settings-panel__row-main">
+                <SettingsStarIcon className="settings-panel__icon" />
+                <span className="settings-panel__label settings-panel__label--inline">Rate app</span>
+              </div>
+              <SettingsChevronIcon className="settings-panel__chevron" />
             </a>
+          </div>
+
+          <div className="settings-panel__row">
+            <a href={FEEDBACK_MAILTO} className="settings-panel__link-row">
+              <div className="settings-panel__row-main">
+                <SettingsFeedbackIcon className="settings-panel__icon" />
+                <span className="settings-panel__label settings-panel__label--inline">
+                  Give feedback
+                </span>
+              </div>
+              <SettingsChevronIcon className="settings-panel__chevron" />
+            </a>
+          </div>
+
+          <div className="settings-panel__row settings-panel__row--action">
+            <button
+              type="button"
+              className="settings-panel__link-row"
+              onClick={() => setShowAbout(true)}
+            >
+              <div className="settings-panel__row-main">
+                <SettingsInfoIcon className="settings-panel__icon" />
+                <span className="settings-panel__label settings-panel__label--inline">About</span>
+              </div>
+              <span className="settings-panel__aside">{APP_INFO.version}</span>
+            </button>
           </div>
 
           <div className="settings-panel__row">
@@ -128,7 +204,9 @@ export function SettingsPage() {
             >
               <div className="settings-panel__row-main">
                 <SettingsShieldIcon className="settings-panel__icon" />
-                <span className="settings-panel__label settings-panel__label--inline">Privacy policy</span>
+                <span className="settings-panel__label settings-panel__label--inline">
+                  Privacy policy
+                </span>
               </div>
               <SettingsChevronIcon className="settings-panel__chevron" />
             </a>
@@ -176,6 +254,16 @@ export function SettingsPage() {
           </p>
         </section>
       </div>
+
+      <ConfirmDialog
+        open={showAbout}
+        title={`About ${APP_INFO.name}`}
+        message={`${APP_INFO.tagline} Version ${APP_INFO.version}. Contact ${APP_INFO.contactEmail}.`}
+        confirmLabel="Got it"
+        cancelLabel="Close"
+        onConfirm={() => setShowAbout(false)}
+        onCancel={() => setShowAbout(false)}
+      />
 
       <ConfirmDialog
         open={showClearConfirm}

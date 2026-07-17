@@ -1,7 +1,8 @@
 import { cancelAllHabitReminders } from '../services/habitReminderService'
+import { DEFAULT_APP_COLOR } from '../constants/appColors'
 import { clearStoredHabits } from './habitStorage'
 import { clearStoredNotes } from './noteStorage'
-import { clearStoredSettings, applyThemeToDocument } from './settingsStorage'
+import { applySettingsToDocument, clearStoredSettings } from './settingsStorage'
 import { clearStoredUser } from './storage'
 
 export function clearAllAppData(): void {
@@ -10,5 +11,5 @@ export function clearAllAppData(): void {
   clearStoredHabits()
   void cancelAllHabitReminders()
   clearStoredSettings()
-  applyThemeToDocument('light')
+  applySettingsToDocument({ theme: 'light', appColor: DEFAULT_APP_COLOR })
 }

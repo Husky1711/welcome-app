@@ -27,6 +27,11 @@ test.describe('Phase 3: Habit reminders', () => {
 
     await expect(page.locator('.habit-card__reminder')).toBeVisible()
     await expect(page.getByText('Morning stretch')).toBeVisible()
+    await expect(
+      page.getByText(
+        'Reminder saved. Notifications fire in the Android app after you allow permission.',
+      ),
+    ).toBeVisible()
 
     await page.getByRole('button', { name: 'Edit habit Morning stretch' }).click()
     await expect(page.getByRole('switch', { name: 'Daily reminder' })).toBeChecked()

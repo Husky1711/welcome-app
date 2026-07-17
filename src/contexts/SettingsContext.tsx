@@ -7,10 +7,11 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { AppSettings, ThemeMode } from '../types/settings'
+import type { AppColor, AppSettings, ThemeMode } from '../types/settings'
 import {
-  applyThemeToDocument,
+  applySettingsToDocument,
   getStoredSettings,
+  setStoredAppColor,
   setStoredTheme,
 } from '../utils/settingsStorage'
 import { syncStatusBarTheme } from '../utils/statusBar'
@@ -18,6 +19,7 @@ import { syncStatusBarTheme } from '../utils/statusBar'
 interface SettingsContextValue {
   settings: AppSettings
   setTheme: (theme: ThemeMode) => void
+  setAppColor: (appColor: AppColor) => void
   toggleTheme: () => void
 }
 
@@ -27,12 +29,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(() => getStoredSettings())
 
   useEffect(() => {
-    applyThemeToDocument(settings.theme)
-    void syncStatusBarTheme(settings.theme)
-  }, [settings.theme])
+    applySettingsToDocument(settings)
+    void syncStatusBarTheme(settings.theme, settings.appColor)
+  }, [settings])
 
   const setTheme = useCallback((theme: ThemeMode) => {
     const next = setStoredTheme(theme)
+    setSettings(next)
+  }, [])
+
+  const setAppColor = useCallback((appColor: AppColor) => {
+    const next = setStoredAppColor(appColor)
     setSettings(next)
   }, [])
 
@@ -41,8 +48,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, [settings.theme, setTheme])
 
   const value = useMemo(
-    () => ({ settings, setTheme, toggleTheme }),
-    [settings, setTheme, toggleTheme],
+    () => ({ settings, setTheme, setAppColor, toggleTheme }),
+    [settings, setTheme, setAppColor, toggleTheme],
   )
 
   return (

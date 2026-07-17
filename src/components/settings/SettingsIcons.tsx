@@ -81,3 +81,35 @@ export function SettingsDeviceIcon({ className = '' }: IconProps) {
     </svg>
   )
 }
+
+export function SettingsStarIcon({ className = '' }: IconProps) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <path
+        d="M12 3.6 13.9 9h5.6l-4.5 3.4 1.7 5.5L12 14.8 7.3 17.9l1.7-5.5L4.5 9h5.6L12 3.6z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function SettingsFeedbackIcon({ className = '' }: IconProps) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <path
+        d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H13l-3.5 3.2V16H7.5A2.5 2.5 0 0 1 5 13.5v-7z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.5 9h7M8.5 12h4.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}

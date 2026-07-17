@@ -9,7 +9,7 @@ export default defineConfig({
   timeout: 60_000,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5180',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'off',
@@ -22,7 +22,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev:firebase',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:5180',
     reuseExistingServer: false,
     timeout: 180000,
   },

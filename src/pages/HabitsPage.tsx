@@ -2,24 +2,31 @@ import { useEffect, useState } from 'react'
 import { HabitForm, type HabitFormValues } from '../components/habits/HabitForm'
 import { HabitIcon } from '../components/habits/HabitIcon'
 import { HabitManageRow } from '../components/habits/HabitManageRow'
+import { HabitShareSheet } from '../components/habits/HabitShareSheet'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
+import { MAX_HABITS } from '../constants/habits'
 import { useHabits } from '../hooks/useHabits'
 import {
   cancelHabitReminder,
-  isNativeReminderSupported,
+  getStoredReminderIssue,
+  openExactAlarmSettings,
+  rescheduleAllHabitReminders,
   syncHabitReminder,
 } from '../services/habitReminderService'
 import type { Habit } from '../types/habit'
 import { AppLayout } from '../layouts/AppLayout'
+import { getActiveTarget, supersedeTarget } from '../utils/habitStorage'
 import '../styles/habits-page.css'
 
 export function HabitsPage() {
   const { habits, archivedHabits, createHabit, editHabit, archive } = useHabits()
   const [isCreating, setIsCreating] = useState(false)
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
+  const [sharingHabit, setSharingHabit] = useState<Habit | null>(null)
   const [habitToArchive, setHabitToArchive] = useState<Habit | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [showExactAlarmAction, setShowExactAlarmAction] = useState(false)
 
   async function applyReminder(habit: Habit, enabled: boolean) {
     if (!enabled) {
@@ -27,17 +34,51 @@ export function HabitsPage() {
       return
     }
 
-    const status = await syncHabitReminder(habit)
-    if (status === 'denied') {
-      setError(
-        'Notification permission denied. Enable notifications in your device settings to get habit reminders.',
-      )
+    const result = await syncHabitReminder(habit)
+
+    if (result.status === 'scheduled') {
+      setShowExactAlarmAction(false)
+      if (result.message) {
+        setInfo(result.message)
+      }
       return
     }
 
-    if (!isNativeReminderSupported()) {
-      setInfo('Reminder saved. Notifications fire on the Android app after you allow permission.')
+    if (result.status === 'unsupported') {
+      setInfo('Reminder saved. Notifications fire in the Android app after you allow permission.')
+      return
     }
+
+    if (result.status === 'exact_alarms_denied') {
+      setInfo(result.message ?? null)
+      setShowExactAlarmAction(true)
+      return
+    }
+
+    if (result.status === 'notifications_denied' || result.status === 'schedule_failed') {
+      editHabit(habit.id, {
+        title: habit.title,
+        icon: habit.icon,
+        reminderEnabled: false,
+        reminderTime: habit.reminderTime,
+      })
+      setError(result.message ?? 'Could not enable this reminder.')
+      setShowExactAlarmAction(false)
+    }
+  }
+
+  async function handleOpenExactAlarmSettings() {
+    const granted = await openExactAlarmSettings()
+    if (granted) {
+      setShowExactAlarmAction(false)
+      setInfo(null)
+      await rescheduleAllHabitReminders(true)
+      return
+    }
+
+    setInfo(
+      'Open app settings and allow Alarms & reminders for Welcome App, then return here.',
+    )
   }
 
   async function handleCreate(values: HabitFormValues) {
@@ -45,6 +86,7 @@ export function HabitsPage() {
       setError(null)
       setInfo(null)
       const habit = createHabit(values)
+      supersedeTarget(habit.id, values.period, values.targetFrequency)
       setIsCreating(false)
       await applyReminder(habit, values.reminderEnabled)
     } catch (createError) {
@@ -58,6 +100,7 @@ export function HabitsPage() {
     setError(null)
     setInfo(null)
     const habit = editHabit(editingHabit.id, values)
+    supersedeTarget(editingHabit.id, values.period, values.targetFrequency)
     setEditingHabit(null)
 
     if (habit) {
@@ -76,39 +119,51 @@ export function HabitsPage() {
     setHabitToArchive(null)
   }
 
-  const showAddButton = !isCreating && !editingHabit
+  const showAddButton = !isCreating && !editingHabit && habits.length < MAX_HABITS
 
   useEffect(() => {
-    if (!editingHabit) {
-      return
+    const storedIssue = getStoredReminderIssue()
+    if (storedIssue) {
+      setInfo(storedIssue)
+      setShowExactAlarmAction(storedIssue.toLowerCase().includes('alarms'))
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isCreating && !editingHabit) return
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsCreating(false)
+        setEditingHabit(null)
+      }
     }
 
-    const frame = window.requestAnimationFrame(() => {
-      document
-        .getElementById(`habit-edit-${editingHabit.id}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    })
-
-    return () => window.cancelAnimationFrame(frame)
-  }, [editingHabit])
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isCreating, editingHabit])
 
   return (
-    <AppLayout
-      title="Habits"
-      subtitle="Manage up to 8 active habits. Set daily reminders per habit on Android."
-      showBrand
-      align="top"
-    >
-      <div className="habits-page">
-        {isCreating ? (
-          <div className="habit-form-card">
-            <HabitForm
-              submitLabel="Add habit"
-              onSubmit={handleCreate}
-              onCancel={() => setIsCreating(false)}
-            />
+    <AppLayout align="top">
+      <div className="habits-page habits-page--editorial">
+        <header className="habits-page__top">
+          <div className="habits-page__heading">
+            <h1 className="habits-page__title">Habits</h1>
+            <p className="habits-page__count">
+              {habits.length} active · {MAX_HABITS} max
+            </p>
           </div>
-        ) : null}
+          {showAddButton ? (
+            <button
+              type="button"
+              className="habits-page__add-circle"
+              onClick={() => setIsCreating(true)}
+              aria-label="Add habit"
+            >
+              <span aria-hidden="true">+</span>
+            </button>
+          ) : null}
+        </header>
 
         {error ? (
           <p className="habits-page__feedback habits-page__feedback--error" role="alert">
@@ -117,53 +172,65 @@ export function HabitsPage() {
         ) : null}
 
         {info ? (
-          <p className="habits-page__feedback habits-page__feedback--info" role="status">
-            {info}
-          </p>
+          <div className="habits-page__feedback habits-page__feedback--info" role="status">
+            <p>{info}</p>
+            {showExactAlarmAction ? (
+              <button
+                type="button"
+                className="habits-page__feedback-action"
+                onClick={() => void handleOpenExactAlarmSettings()}
+              >
+                Open alarm settings
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
-        <section aria-label="Active habits">
+        <section className="habit-sheet" aria-label="Active habits">
           {habits.length === 0 ? (
             <div className="habits-empty">
               <p>No active habits yet. Add one to start building your daily rhythm.</p>
             </div>
           ) : (
-            <ul className="habits-page__list">
-              {habits.map((habit) =>
-                editingHabit?.id === habit.id ? (
-                  <li key={habit.id} id={`habit-edit-${habit.id}`} className="habit-form-card">
-                    <HabitForm
-                      key={habit.id}
-                      initialTitle={editingHabit.title}
-                      initialIcon={editingHabit.icon}
-                      initialReminderEnabled={editingHabit.reminderEnabled}
-                      initialReminderTime={editingHabit.reminderTime}
-                      submitLabel="Save changes"
-                      onSubmit={handleEdit}
-                      onCancel={() => setEditingHabit(null)}
-                    />
-                  </li>
-                ) : (
-                  <HabitManageRow
-                    key={habit.id}
-                    habit={habit}
-                    onEdit={setEditingHabit}
-                    onArchive={setHabitToArchive}
-                  />
-                ),
-              )}
+            <ul className="habit-sheet__list">
+              {habits.map((habit) => (
+                <HabitManageRow
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={setEditingHabit}
+                />
+              ))}
+
+              {showAddButton ? (
+                <li className="habit-sheet__add-row">
+                  <button
+                    type="button"
+                    className="habit-sheet__add-btn"
+                    onClick={() => setIsCreating(true)}
+                  >
+                    <span className="habit-sheet__add-icon" aria-hidden="true">
+                      +
+                    </span>
+                    Add new habit
+                  </button>
+                </li>
+              ) : null}
             </ul>
           )}
-        </section>
 
-        {showAddButton ? (
-          <button type="button" className="habits-add-btn" onClick={() => setIsCreating(true)}>
-            <span className="habits-add-btn__icon" aria-hidden="true">
-              +
-            </span>
-            Add new habit
-          </button>
-        ) : null}
+          {habits.length === 0 && showAddButton ? (
+            <button
+              type="button"
+              className="habit-sheet__add-btn habit-sheet__add-btn--lonely"
+              onClick={() => setIsCreating(true)}
+            >
+              <span className="habit-sheet__add-icon" aria-hidden="true">
+                +
+              </span>
+              Add new habit
+            </button>
+          ) : null}
+        </section>
 
         {archivedHabits.length > 0 ? (
           <section className="habits-archived" aria-label="Archived habits">
@@ -177,6 +244,75 @@ export function HabitsPage() {
           </section>
         ) : null}
       </div>
+
+      {isCreating || editingHabit ? (
+        <div
+          className="habit-composer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={editingHabit ? 'Edit habit' : 'New habit'}
+        >
+          <button
+            type="button"
+            className="habit-composer__backdrop"
+            aria-label="Dismiss"
+            onClick={() => {
+              setIsCreating(false)
+              setEditingHabit(null)
+            }}
+          />
+          <div className="habit-composer__panel">
+            {isCreating ? (
+              <HabitForm
+                submitLabel="Add habit"
+                onSubmit={handleCreate}
+                onCancel={() => setIsCreating(false)}
+              />
+            ) : null}
+            {editingHabit ? (
+              <>
+                <HabitForm
+                  key={editingHabit.id}
+                  initialTitle={editingHabit.title}
+                  initialIcon={editingHabit.icon}
+                  initialReminderEnabled={editingHabit.reminderEnabled}
+                  initialReminderTime={editingHabit.reminderTime}
+                  initialPeriod={getActiveTarget(editingHabit.id)?.period ?? 'daily'}
+                  initialTargetFrequency={
+                    getActiveTarget(editingHabit.id)?.targetFrequency ?? 1
+                  }
+                  submitLabel="Save changes"
+                  onSubmit={handleEdit}
+                  onCancel={() => setEditingHabit(null)}
+                />
+                <button
+                  type="button"
+                  className="habit-composer__share"
+                  onClick={() => {
+                    setSharingHabit(editingHabit)
+                    setEditingHabit(null)
+                  }}
+                  aria-label={`Share streak for ${editingHabit.title}`}
+                >
+                  Share streak
+                </button>
+                <button
+                  type="button"
+                  className="habit-composer__archive"
+                  onClick={() => setHabitToArchive(editingHabit)}
+                  aria-label={`Archive habit ${editingHabit.title}`}
+                >
+                  Archive habit
+                </button>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      {sharingHabit ? (
+        <HabitShareSheet habit={sharingHabit} onClose={() => setSharingHabit(null)} />
+      ) : null}
 
       <ConfirmDialog
         open={habitToArchive !== null}

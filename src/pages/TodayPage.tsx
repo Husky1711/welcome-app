@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import { WeekMatrix } from '../components/habits/WeekMatrix'
+import { WeeklyGoalCards } from '../components/habits/WeeklyGoalCards'
 import { TodayHabitList } from '../components/habits/TodayHabitList'
-import { TodaySnapshotPanel } from '../components/habits/TodaySnapshotPanel'
 import { useHabits } from '../hooks/useHabits'
-import { useTodayTracker } from '../hooks/useTodayTracker'
+import { useWeekMatrix } from '../hooks/useWeekMatrix'
 import { AppLayout } from '../layouts/AppLayout'
 import type { HabitSuggestion } from '../types/habit'
 import '../styles/habits-page.css'
@@ -10,15 +11,9 @@ import '../styles/today-page.css'
 
 export function TodayPage() {
   const { createHabit } = useHabits()
-  const { habits, progress, completedMap, streakMap, toggleHabit, refresh } = useTodayTracker()
+  const { today, habits, weekDates, weeklyGoals, isCompleted, toggleCell, refresh } =
+    useWeekMatrix()
   const [addError, setAddError] = useState<string | null>(null)
-
-  const bestStreak = useMemo(() => {
-    if (streakMap.size === 0) {
-      return 0
-    }
-    return Math.max(...streakMap.values())
-  }, [streakMap])
 
   const handleAddSuggestion = (suggestion: HabitSuggestion) => {
     try {
@@ -33,34 +28,32 @@ export function TodayPage() {
   return (
     <AppLayout
       title="Today"
-      subtitle="Your day. Your work. Your space."
+      subtitle="Your week at a glance. Tap a circle to check in."
       showBrand
       align="top"
     >
       <div className="today-page">
-        {habits.length > 0 ? (
-          <TodaySnapshotPanel
-            habitCount={habits.length}
-            completed={progress.completed}
-            total={progress.total}
-            percent={progress.percent}
-            bestStreak={bestStreak}
-          />
-        ) : null}
-
-        <section className="today-page__habits" aria-label="Daily habits">
-          {habits.length > 0 ? (
-            <h2 className="today-page__section-title">Daily habits</h2>
-          ) : null}
+        {habits.length === 0 ? (
           <TodayHabitList
             habits={habits}
-            completedMap={completedMap}
-            streakMap={streakMap}
-            onToggle={toggleHabit}
+            completedMap={new Map()}
+            streakMap={new Map()}
+            onToggle={() => undefined}
             onAddSuggestion={handleAddSuggestion}
             addError={addError}
           />
-        </section>
+        ) : (
+          <>
+            <WeekMatrix
+              habits={habits}
+              weekDates={weekDates}
+              today={today}
+              isCompleted={isCompleted}
+              onToggle={toggleCell}
+            />
+            <WeeklyGoalCards goals={weeklyGoals} />
+          </>
+        )}
       </div>
     </AppLayout>
   )

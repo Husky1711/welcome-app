@@ -15,7 +15,7 @@ test.describe('Welcome App E2E', () => {
     await page.getByRole('button', { name: 'Sign in' }).click()
 
     await expect(page.getByRole('heading', { name: /Welcome, admin/i })).toBeVisible()
-    await expect(page.getByText('You are signed in to your personal space.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Open account menu' })).toBeVisible()
 
     await page.getByRole('link', { name: /My Notes/i }).click()
     await expect(page.getByRole('heading', { name: 'My Notes' })).toBeVisible()
@@ -29,7 +29,8 @@ test.describe('Welcome App E2E', () => {
     await expect(page.getByText('Upload AAB and complete Play Console forms.')).toBeVisible()
 
     await page.getByRole('tab', { name: 'Home' }).click()
-    await page.getByRole('link', { name: /Profile/i }).click()
+    await page.getByRole('button', { name: 'Open account menu' }).click()
+    await page.getByRole('link', { name: 'Profile' }).click()
     await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible()
 
     const displayName = page.getByLabel('What should we call you?')
@@ -40,11 +41,11 @@ test.describe('Welcome App E2E', () => {
     await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByRole('heading', { name: /Welcome, Sai Prasad/i })).toBeVisible()
 
-    await page.getByRole('link', { name: /Settings/i }).click()
+    await page.goto('/#/settings')
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
-    await expect(page.getByText('Version')).toBeVisible()
+    await expect(page.getByText('About')).toBeVisible()
     await expect(
-      page.locator('.settings-panel__row', { hasText: 'Version' }).locator('.settings-panel__aside'),
+      page.locator('.settings-panel__row', { hasText: 'About' }).locator('.settings-panel__aside'),
     ).toHaveText('2.0.0')
 
     await page.locator('label.settings-toggle').click()

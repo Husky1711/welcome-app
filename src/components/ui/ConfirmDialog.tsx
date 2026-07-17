@@ -62,11 +62,14 @@ export function ConfirmDialog({
       >
         <h2
           id="confirm-dialog-title"
-          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+          className="type-title text-[#1b4332] dark:text-[#d8f3dc]"
         >
           {title}
         </h2>
-        <p id="confirm-dialog-message" className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p
+          id="confirm-dialog-message"
+          className="type-body mt-2 text-[#5c6b62] dark:text-[#a7b0a9]"
+        >
           {message}
         </p>
 
