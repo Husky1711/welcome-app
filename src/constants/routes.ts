@@ -7,6 +7,12 @@ export const ROUTES = {
   CALENDAR: '/calendar',
   HABITS: '/habits',
   NOTES: '/notes',
+  NOTE_EDITOR: '/notes/:noteId',
+  COACH: '/coach',
   PROFILE: '/profile',
   SETTINGS: '/settings',
 } as const
+
+export function noteEditorPath(noteId: string): string {
+  return `/notes/${noteId}`
+}

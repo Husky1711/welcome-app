@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { InsightsCard } from '../components/habits/InsightsCard'
 import { AppLayout } from '../layouts/AppLayout'
-import { ensureConsistencyHistorySeed } from '../utils/consistencySeed'
 import { formatLocalDate } from '../utils/dateUtils'
 import { getStoryInsights, type StoryRange } from '../utils/habitInsights'
 import '../styles/calendar-page.css'
@@ -10,17 +9,10 @@ import '../styles/habits-page.css'
 export function CalendarPage() {
   const today = formatLocalDate()
   const [range, setRange] = useState<StoryRange>('this-week')
-  const [seedTick, setSeedTick] = useState(0)
 
-  useEffect(() => {
-    const seeded = ensureConsistencyHistorySeed(today)
-    if (seeded) setSeedTick((tick) => tick + 1)
-  }, [today])
-
-  const insights = useMemo(
-    () => getStoryInsights(range, today),
-    [range, today, seedTick],
-  )
+  // Insights use genuine habit logs only. Synthetic consistency seeding was
+  // removed from production so Coach/AI never trains on fabricated history.
+  const insights = useMemo(() => getStoryInsights(range, today), [range, today])
 
   return (
     <AppLayout align="top">

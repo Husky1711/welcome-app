@@ -17,13 +17,14 @@ test.describe('Welcome App E2E', () => {
     await expect(page.getByRole('heading', { name: /Welcome, admin/i })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Open account menu' })).toBeVisible()
 
-    await page.getByRole('link', { name: /My Notes/i }).click()
+    await page.getByRole('link', { name: /Notes/i }).click()
     await expect(page.getByRole('heading', { name: 'My Notes' })).toBeVisible()
 
-    await page.getByRole('button', { name: 'Add new note' }).click()
+    await page.getByRole('button', { name: 'Add new' }).click()
     await page.getByLabel('Title').fill('Play Store checklist')
-    await page.getByLabel('Content').fill('Upload AAB and complete Play Console forms.')
-    await page.getByRole('button', { name: 'Add note' }).click()
+    await page.getByLabel('Note content').first().fill('Upload AAB and complete Play Console forms.')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
     await expect(page.getByRole('heading', { name: 'Play Store checklist' })).toBeVisible()
     await expect(page.getByText('Upload AAB and complete Play Console forms.')).toBeVisible()

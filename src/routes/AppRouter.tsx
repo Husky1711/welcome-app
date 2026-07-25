@@ -2,8 +2,10 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
 import { AuthLayout } from '../layouts/AuthLayout'
 import { CalendarPage } from '../pages/CalendarPage'
+import { CoachPage } from '../pages/CoachPage'
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { HabitsPage } from '../pages/HabitsPage'
+import { NoteEditorPage } from '../pages/NoteEditorPage'
 import { NotesPage } from '../pages/NotesPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { SettingsPage } from '../pages/SettingsPage'
@@ -41,6 +43,8 @@ export function AppRouter() {
         <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
         <Route path={ROUTES.HABITS} element={<HabitsPage />} />
         <Route path={ROUTES.NOTES} element={<NotesPage />} />
+        <Route path={ROUTES.NOTE_EDITOR} element={<NoteEditorPage />} />
+        <Route path={ROUTES.COACH} element={<CoachPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
       </Route>

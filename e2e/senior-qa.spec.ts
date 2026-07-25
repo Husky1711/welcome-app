@@ -98,13 +98,13 @@ test.describe('Senior QA — Dashboard & Navigation', () => {
   })
 
   test('dashboard shows all feature cards with correct counts', async ({ page }) => {
-    await expect(page.getByRole('link', { name: /My Notes/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Notes/i })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Open account menu' })).toBeVisible()
     await expect(page.getByText(/0 private notes/i)).toBeVisible()
   })
 
   test('home tab returns to dashboard from each section', async ({ page }) => {
-    await page.getByRole('link', { name: /My Notes/i }).click()
+    await page.getByRole('link', { name: /Notes/i }).click()
     await expect(page.getByRole('heading', { name: 'My Notes' })).toBeVisible()
     await page.getByRole('tab', { name: 'Home' }).click()
     await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
@@ -137,64 +137,65 @@ test.describe('Senior QA — Notes CRUD', () => {
   test.beforeEach(async ({ page }) => {
     await clearAppStorage(page)
     await login(page)
-    await page.getByRole('link', { name: /My Notes/i }).click()
+    await page.getByRole('link', { name: /Notes/i }).click()
   })
 
-  test('empty note form shows validation errors', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add new note' }).click()
-    await page.getByRole('button', { name: 'Add note' }).click()
-
-    await expect(page.getByText('Please enter a title for your note.')).toBeVisible()
-  })
-
-  test('cancel note creation returns to list view', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add new note' }).click()
-    await page.getByRole('button', { name: 'Cancel' }).click()
-
-    await expect(page.getByRole('button', { name: 'Add new note' })).toBeVisible()
-    await expect(page.getByText('No notes yet')).toBeVisible()
+  test('add new opens autosaving editor', async ({ page }) => {
+    await page.getByRole('button', { name: 'Add new' }).click()
+    await expect(page.getByLabel('Title')).toBeVisible()
+    await expect(page.getByText(/Autosaved/i)).toBeVisible()
   })
 
   test('create, edit, delete note lifecycle', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add new note' }).click()
+    await page.getByRole('button', { name: 'Add new' }).click()
     await page.getByLabel('Title').fill('Bug report')
-    await page.getByLabel('Content').fill('Found during QA testing.')
-    await page.getByRole('button', { name: 'Add note' }).click()
+    await page.getByLabel('Note content').first().fill('Found during QA testing.')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
     await expect(page.getByRole('heading', { name: 'Bug report' })).toBeVisible()
 
-    await page.getByRole('button', { name: 'Edit note Bug report' }).click()
+    await page.getByRole('button', { name: 'Open Bug report' }).click()
     await page.getByLabel('Title').fill('Bug report — fixed')
-    await page.getByRole('button', { name: 'Save changes' }).click()
-
-    await expect(page.getByRole('heading', { name: 'Bug report — fixed' })).toBeVisible()
-
-    await page.getByRole('button', { name: 'Delete note Bug report — fixed' }).click()
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('button', { name: 'More actions' }).click()
+    await page.getByRole('menuitem', { name: 'Delete' }).click()
     await expect(page.getByRole('alertdialog', { name: 'Delete note?' })).toBeVisible()
     await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).click()
+
     await expect(page.getByText('No notes yet')).toBeVisible()
   })
 
   test('notes persist after reload and count updates on dashboard', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add new note' }).click()
+    await page.getByRole('button', { name: 'Add new' }).click()
     await page.getByLabel('Title').fill('Persistent note')
-    await page.getByLabel('Content').fill('Should survive reload.')
-    await page.getByRole('button', { name: 'Add note' }).click()
+    await page.getByLabel('Note content').first().fill('Should survive reload.')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Persistent note' })).toBeVisible()
 
     await page.getByRole('tab', { name: 'Home' }).click()
-    await expect(page.getByText(/1 private note saved/i)).toBeVisible()
+    await expect(page.getByText(/1 saved/i)).toBeVisible()
   })
 
-  test('whitespace-only note title is rejected', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add new note' }).click()
-    await page.getByLabel('Title').fill('   ')
-    await page.getByLabel('Content').fill('Some content')
-    await page.getByRole('button', { name: 'Add note' }).click()
+  test('search filters notes', async ({ page }) => {
+    await page.getByRole('button', { name: 'Add new' }).click()
+    await page.getByLabel('Title').fill('Groceries')
+    await page.getByLabel('Note content').first().fill('Milk')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
-    await expect(page.getByText('Please enter a title for your note.')).toBeVisible()
+    await page.getByRole('button', { name: 'Add new' }).click()
+    await page.getByLabel('Title').fill('Bills')
+    await page.getByLabel('Note content').first().fill('Electric')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
+
+    await page.getByLabel('Search notes and tasks').fill('Milk')
+    await expect(page.getByRole('heading', { name: 'Groceries' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Bills' })).toHaveCount(0)
   })
 })
 
@@ -266,11 +267,11 @@ test.describe('Senior QA — Settings & Data', () => {
 
   test('clear all data logs out and resets app', async ({ page }) => {
     await page.getByRole('tab', { name: 'Home' }).click()
-    await page.getByRole('link', { name: /My Notes/i }).click()
-    await page.getByRole('button', { name: 'Add new note' }).click()
+    await page.getByRole('link', { name: /Notes/i }).click()
+    await page.getByRole('button', { name: 'Add new' }).click()
     await page.getByLabel('Title').fill('Temp note')
-    await page.getByLabel('Content').fill('Will be cleared')
-    await page.getByRole('button', { name: 'Add note' }).click()
+    await page.getByLabel('Note content').first().fill('Will be cleared')
+    await page.getByRole('button', { name: 'Done' }).click()
     await page.evaluate(() => {
       localStorage.setItem(
         'welcome_app_avatars',
@@ -299,14 +300,18 @@ test.describe('Senior QA — Settings & Data', () => {
 
   test('delete note confirmation can be cancelled', async ({ page }) => {
     await page.getByRole('tab', { name: 'Home' }).click()
-    await page.getByRole('link', { name: /My Notes/i }).click()
-    await page.getByRole('button', { name: 'Add new note' }).click()
+    await page.getByRole('link', { name: /Notes/i }).click()
+    await page.getByRole('button', { name: 'Add new' }).click()
     await page.getByLabel('Title').fill('Keep me')
-    await page.getByLabel('Content').fill('Should not be deleted')
-    await page.getByRole('button', { name: 'Add note' }).click()
+    await page.getByLabel('Note content').first().fill('Should not be deleted')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
-    await page.getByRole('button', { name: 'Delete note Keep me' }).click()
-    await page.getByRole('button', { name: 'Cancel' }).click()
+    await page.getByRole('button', { name: 'Open Keep me' }).click()
+    await page.getByRole('button', { name: 'More actions' }).click()
+    await page.getByRole('menuitem', { name: 'Delete' }).click()
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Cancel' }).click()
+    await page.getByRole('link', { name: 'Back to notes' }).click()
 
     await expect(page.getByRole('heading', { name: 'Keep me' })).toBeVisible()
   })

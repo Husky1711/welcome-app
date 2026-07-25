@@ -1,6 +1,8 @@
 export interface User {
   email: string
   displayName: string
+  /** Firebase Auth UID when signed in with Firebase; absent under mock auth. */
+  uid?: string
   memberSince?: string
 }
 

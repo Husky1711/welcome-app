@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AccountSheet } from './AccountSheet'
 import { ProgressRing } from '../habits/ProgressRing'
-import { ChevronRightIcon, NotesFeatureIcon } from '../icons/NavIcons'
+import { ChevronRightIcon, CoachFeatureIcon, NotesFeatureIcon } from '../icons/NavIcons'
 import { ROUTES } from '../../constants/routes'
 import { useAuth } from '../../hooks/useAuth'
 import { useNotes } from '../../hooks/useNotes'
@@ -20,7 +20,7 @@ function getTimeGreeting(): string {
 
 export function WelcomeDashboard() {
   const { user } = useAuth()
-  const { notes } = useNotes()
+  const { notes, openTaskCount } = useNotes()
   const { habits, progress } = useTodayTracker()
   const { avatarUrl } = useProfileAvatar(user?.email)
   const [accountOpen, setAccountOpen] = useState(false)
@@ -110,10 +110,25 @@ export function WelcomeDashboard() {
             <NotesFeatureIcon />
           </span>
           <span className="welcome-dashboard__notes-copy">
-            <span className="welcome-dashboard__notes-title">My Notes</span>
+            <span className="welcome-dashboard__notes-title">Notes & Tasks</span>
             <span className="welcome-dashboard__notes-meta">
-              {notes.length} private note{notes.length === 1 ? '' : 's'} saved
+              {notes.length === 0
+                ? '0 private notes saved'
+                : `${notes.length} saved${openTaskCount > 0 ? ` · ${openTaskCount} open task${openTaskCount === 1 ? '' : 's'}` : ''}`}
             </span>
+          </span>
+          <span className="welcome-dashboard__notes-chevron" aria-hidden="true">
+            <ChevronRightIcon />
+          </span>
+        </Link>
+
+        <Link to={ROUTES.COACH} className="welcome-dashboard__notes" aria-label="Welcome Coach">
+          <span className="welcome-dashboard__notes-icon" aria-hidden="true">
+            <CoachFeatureIcon />
+          </span>
+          <span className="welcome-dashboard__notes-copy">
+            <span className="welcome-dashboard__notes-title">Welcome Coach</span>
+            <span className="welcome-dashboard__notes-meta">Habit partner · approved memories stay on device</span>
           </span>
           <span className="welcome-dashboard__notes-chevron" aria-hidden="true">
             <ChevronRightIcon />

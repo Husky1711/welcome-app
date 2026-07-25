@@ -31,11 +31,12 @@ test('capture Play Store screenshots', async ({ page }) => {
     fullPage: false,
   })
 
-  await page.getByRole('link', { name: /My Notes/i }).click()
-  await page.getByRole('button', { name: 'Add new note' }).click()
+  await page.getByRole('link', { name: /Notes/i }).click()
+  await page.getByRole('button', { name: 'Add new' }).click()
   await page.getByLabel('Title').fill('Grocery list')
-  await page.getByLabel('Content').fill('Milk, eggs, bread, and coffee.')
-  await page.getByRole('button', { name: 'Add note' }).click()
+  await page.getByLabel('Note content').first().fill('Milk, eggs, bread, and coffee.')
+  await page.getByRole('button', { name: 'Done' }).click()
+  await page.getByRole('link', { name: 'Back to notes' }).click()
 
   await page.screenshot({
     path: join(OUTPUT_DIR, '03-notes-screen.png'),

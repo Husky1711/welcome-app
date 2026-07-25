@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:firebase": "npx firebase emulators:exec --only auth --project demo-welcome-app \"vite --mode firebase-emulator --port 5180\"",
+    "dev:firebase:functions": "npx firebase emulators:exec --only auth,functions --project demo-welcome-app \"vite --mode firebase-emulator --port 5180\"",
+    "functions:build": "npm --prefix functions run build",
     "build": "tsc -b && vite build",
     "build:android": "npm run build && npx cap sync android",
     "apk:debug": "npm run build:android && cd android && gradlew.bat assembleDebug && copy /Y app\\build\\outputs\\apk\\debug\\app-debug.apk ..\\WelcomeApp-v2.0.0-debug.apk",

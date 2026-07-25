@@ -9,6 +9,7 @@ export function mapFirebaseUser(firebaseUser: FirebaseUser): User {
   const email = firebaseUser.email ?? ''
   return {
     email,
+    uid: firebaseUser.uid,
     displayName: firebaseUser.displayName?.trim() || deriveDisplayName(email),
     memberSince: firebaseUser.metadata.creationTime || undefined,
   }

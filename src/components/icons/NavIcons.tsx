@@ -162,6 +162,36 @@ export function NotesFeatureIcon({ size = 20, className = '' }: IconProps) {
   )
 }
 
+export function CoachFeatureIcon({ size = 20, className = '' }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        d="M12 3.5c2.2 2.1 3.5 4.4 3.5 6.6a3.5 3.5 0 11-7 0c0-2.2 1.3-4.5 3.5-6.6z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.2 14.8c.7 1.6 1.6 2.9 2.8 4.2 1.2-1.3 2.1-2.6 2.8-4.2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 11.2l.7 1.5 1.6.2-1.2 1.1.3 1.6L12 14.8l-1.4.8.3-1.6-1.2-1.1 1.6-.2.7-1.5z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
 export function ProfileFeatureIcon({ size = 20, className = '' }: IconProps) {
   return (
     <svg

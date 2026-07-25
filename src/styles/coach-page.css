@@ -1,0 +1,209 @@
+.coach-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.coach-unavailable,
+.coach-consent {
+  border-radius: 1rem;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.12);
+  background: #ffffff;
+  padding: 1.15rem 1.1rem;
+  box-shadow: 0 4px 18px rgb(15 23 42 / 0.05);
+}
+
+.coach-unavailable h2,
+.coach-consent__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.coach-unavailable p,
+.coach-consent__body {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #4b5563;
+}
+
+.coach-consent__list {
+  margin: 0.85rem 0 1.1rem;
+  padding-left: 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.coach-consent__list li + li {
+  margin-top: 0.35rem;
+}
+
+.coach-disclosure__toggle {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.coach-disclosure__panel {
+  margin-top: 0.55rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.1);
+  background: rgb(var(--color-primary-rgb) / 0.04);
+  padding: 0.8rem 0.9rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.coach-disclosure__panel p {
+  margin: 0;
+}
+
+.coach-disclosure__panel ul {
+  margin: 0.45rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.coach-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 12rem;
+}
+
+.coach-thread__empty {
+  margin: 0;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: #8c8c8c;
+}
+
+.coach-bubble {
+  max-width: 92%;
+  border-radius: 1rem;
+  padding: 0.75rem 0.9rem;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.coach-bubble p {
+  margin: 0;
+}
+
+.coach-bubble--user {
+  align-self: flex-end;
+  background: var(--color-primary);
+  color: #ffffff;
+  border-bottom-right-radius: 0.35rem;
+}
+
+.coach-bubble--assistant {
+  align-self: flex-start;
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.1);
+  border-bottom-left-radius: 0.35rem;
+  box-shadow: 0 2px 10px rgb(15 23 42 / 0.04);
+}
+
+.coach-bubble--system {
+  align-self: center;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.8125rem;
+}
+
+.coach-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.coach-suggestions__chip {
+  text-align: left;
+  border-radius: 0.85rem;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.14);
+  background: #ffffff;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.coach-suggestions__chip:hover:not(:disabled) {
+  background: rgb(var(--color-primary-rgb) / 0.05);
+}
+
+.coach-suggestions__chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.coach-error {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: #b42318;
+}
+
+.coach-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  position: sticky;
+  bottom: 5.5rem;
+  padding-top: 0.25rem;
+  background: linear-gradient(to top, var(--color-background, #f7f4ef) 70%, transparent);
+}
+
+.coach-composer textarea {
+  width: 100%;
+  resize: none;
+  border-radius: 0.95rem;
+  border: 1px solid rgb(var(--color-primary-rgb) / 0.14);
+  background: #ffffff;
+  padding: 0.8rem 0.95rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: #1f2937;
+}
+
+.coach-composer textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(var(--color-primary-rgb) / 0.12);
+}
+
+.dark .coach-unavailable,
+.dark .coach-consent,
+.dark .coach-bubble--assistant,
+.dark .coach-suggestions__chip,
+.dark .coach-composer textarea {
+  background: #242424;
+  color: #f3f4f6;
+  border-color: rgb(255 255 255 / 0.08);
+}
+
+.dark .coach-unavailable p,
+.dark .coach-consent__body,
+.dark .coach-consent__list,
+.dark .coach-disclosure__panel {
+  color: #c8c8c8;
+}

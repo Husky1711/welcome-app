@@ -14,9 +14,11 @@ import {
 const CONSISTENCY_SEED_FLAG = 'welcome_app_consistency_seed_v3'
 
 /**
- * If the user has habits but a mostly-empty past (sparse map), backfill a
- * varied completion pattern across the last 5 weeks so Insights looks like
- * the design heatmap. Never overwrites existing completed days.
+ * Demo/test helper: backfills a varied completion pattern across the last 5
+ * weeks so Insights heatmaps look designed. Never call this from production UI —
+ * fabricated history must not enter Coach/AI context.
+ *
+ * Kept for unit tests and explicit demo fixtures only.
  */
 export function ensureConsistencyHistorySeed(
   today: string = formatLocalDate(),

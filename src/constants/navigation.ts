@@ -18,6 +18,7 @@ export const BOTTOM_NAV_ROUTES: readonly string[] = BOTTOM_NAV_TABS.map((tab) =>
 /** Secondary screens reached from Home — still show the tab bar for consistent navigation. */
 export const SECONDARY_APP_ROUTES: readonly string[] = [
   ROUTES.NOTES,
+  ROUTES.COACH,
   ROUTES.PROFILE,
   ROUTES.SETTINGS,
 ]
