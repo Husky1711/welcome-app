@@ -27,6 +27,7 @@ import {
   readNoteMediaDataUrl,
   saveNoteMediaFile,
 } from '../../services/noteMediaService'
+import { ConvertToTaskSheet, type TaskDetailsValue } from './ConvertToTaskSheet'
 import { EditorToolbar } from './EditorToolbar'
 
 interface NoteEditorProps {
@@ -48,17 +49,15 @@ function cloneBlocks(blocks: NoteBlock[]): NoteBlock[] {
   return structuredClone(blocks)
 }
 
-function todayIsoDate(): string {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${now.getFullYear()}-${month}-${day}`
-}
-
 function blockPlaceholder(type: NoteBlock['type']): string {
   if (type === 'checklist') return 'To-do'
   if (type === 'bullet') return 'List item'
   return 'Start writing…'
+}
+
+function formatTaskDue(dueDate: string): string {
+  const due = new Date(`${dueDate}T12:00:00`)
+  return due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
 export function NoteEditor({
@@ -73,12 +72,12 @@ export function NoteEditor({
   const [activeBlockId, setActiveBlockId] = useState<string | null>(note.blocks[0]?.id ?? null)
   const [isWriting, setIsWriting] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [mediaBusy, setMediaBusy] = useState(false)
   const [mediaError, setMediaError] = useState<string | null>(null)
   const [mediaUrls, setMediaUrls] = useState<Record<string, string>>({})
   const [previewImage, setPreviewImage] = useState<{ src: string; name: string } | null>(null)
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
+  const [taskSheetMode, setTaskSheetMode] = useState<'convert' | 'edit' | null>(null)
   const skipNextSync = useRef(false)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const attachInputRef = useRef<HTMLInputElement>(null)
@@ -288,11 +287,6 @@ export function NoteEditor({
     updateBlock(activeBlock.id, (block) => toggleBlockMark(block, 'bold'))
   }
 
-  function handleItalic() {
-    if (!activeBlock || !isTextBlock(activeBlock)) return
-    updateBlock(activeBlock.id, (block) => toggleBlockMark(block, 'italic'))
-  }
-
   function applySnapshot(snapshot: EditorSnapshot) {
     applyingHistoryRef.current = true
     skipNextSync.current = true
@@ -326,7 +320,6 @@ export function NoteEditor({
       return
     }
 
-    setMediaBusy(true)
     try {
       const media = await saveNoteMediaFile({
         ownerKey: note.ownerKey,
@@ -342,8 +335,6 @@ export function NoteEditor({
       }
     } catch (error) {
       setMediaError(error instanceof NoteMediaError ? error.message : 'Could not add that file.')
-    } finally {
-      setMediaBusy(false)
     }
   }
 
@@ -365,6 +356,24 @@ export function NoteEditor({
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
+  }
+
+  function handleTaskSheetSave(value: TaskDetailsValue) {
+    if (taskSheetMode === 'convert') {
+      onChange({
+        kind: 'task',
+        dueDate: value.dueDate,
+        reminderEnabled: value.reminderEnabled,
+        reminderTime: value.reminderTime,
+      })
+    } else {
+      onChange({
+        dueDate: value.dueDate,
+        reminderEnabled: value.reminderEnabled,
+        reminderTime: value.reminderTime,
+      })
+    }
+    setTaskSheetMode(null)
   }
 
   function handleBlockKeyDown(
@@ -467,14 +476,6 @@ export function NoteEditor({
           </button>
         ) : (
           <div className="note-editor__actions">
-            <button
-              type="button"
-              className={`note-editor__icon-btn${note.pinned ? ' is-active' : ''}`}
-              aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
-              onClick={() => onChange({ pinned: !note.pinned })}
-            >
-              <PinIcon filled={note.pinned} />
-            </button>
             <div className="note-editor__menu-wrap">
               <button
                 type="button"
@@ -491,24 +492,60 @@ export function NoteEditor({
                     type="button"
                     role="menuitem"
                     onClick={() => {
-                      onChange({ kind: note.kind === 'task' ? 'note' : 'task' })
+                      onChange({ pinned: !note.pinned })
                       setMenuOpen(false)
                     }}
                   >
-                    {note.kind === 'task' ? 'Convert to note' : 'Convert to task'}
+                    {note.pinned ? 'Unpin' : 'Pin'}
                   </button>
-                  {note.kind === 'task' ? (
+                  {note.kind === 'note' ? (
                     <button
                       type="button"
                       role="menuitem"
                       onClick={() => {
                         setMenuOpen(false)
-                        onRequestConvertToHabit?.()
+                        setTaskSheetMode('convert')
                       }}
                     >
-                      Convert to habit…
+                      Convert to task…
                     </button>
-                  ) : null}
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          setTaskSheetMode('edit')
+                        }}
+                      >
+                        Due & reminder…
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          onChange({
+                            kind: 'note',
+                            reminderEnabled: false,
+                          })
+                          setMenuOpen(false)
+                        }}
+                      >
+                        Convert to note
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          onRequestConvertToHabit?.()
+                        }}
+                      >
+                        Convert to habit…
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
                     role="menuitem"
@@ -538,74 +575,18 @@ export function NoteEditor({
       </div>
 
       <div className="note-editor__meta">
-        <div className="note-editor__kind" role="group" aria-label="Note type">
-          <button
-            type="button"
-            className={note.kind === 'note' ? 'is-active' : ''}
-            onClick={() => onChange({ kind: 'note' })}
-          >
-            Note
-          </button>
-          <button
-            type="button"
-            className={note.kind === 'task' ? 'is-active' : ''}
-            onClick={() => onChange({ kind: 'task' })}
-          >
-            Task
-          </button>
-        </div>
-
         {note.kind === 'task' ? (
-          <div className="note-editor__task-fields">
-            <label className="note-editor__due">
-              <span>Due</span>
-              <input
-                type="date"
-                value={note.dueDate ?? ''}
-                onChange={(event) => onChange({ dueDate: event.target.value || null })}
-                onFocus={() => setIsWriting(true)}
-              />
-            </label>
-            <label className="note-editor__reminder-toggle">
-              <input
-                type="checkbox"
-                checked={note.reminderEnabled}
-                onChange={(event) => {
-                  const enabled = event.target.checked
-                  if (enabled && !note.dueDate) {
-                    onChange({
-                      reminderEnabled: true,
-                      dueDate: todayIsoDate(),
-                      reminderTime: note.reminderTime ?? '09:00',
-                    })
-                    return
-                  }
-                  onChange({
-                    reminderEnabled: enabled,
-                    reminderTime: enabled ? note.reminderTime ?? '09:00' : note.reminderTime,
-                  })
-                }}
-              />
-              <span>Remind me</span>
-            </label>
-            {note.reminderEnabled ? (
-              <label className="note-editor__due">
-                <span>At</span>
-                <input
-                  type="time"
-                  value={note.reminderTime ?? '09:00'}
-                  onChange={(event) => onChange({ reminderTime: event.target.value || '09:00' })}
-                />
-              </label>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            className="note-editor__task-chip"
+            onClick={() => setTaskSheetMode('edit')}
+          >
+            <span>Task</span>
+            {note.dueDate ? <span>· Due {formatTaskDue(note.dueDate)}</span> : null}
+            {note.reminderEnabled ? <span>· Reminder</span> : null}
+          </button>
         ) : null}
-
-        <p className="note-editor__saved">
-          {note.shareWithCoach
-            ? 'Shared with Coach when available · Autosaved'
-            : 'Private on this device · Autosaved'}
-        </p>
+        <p className="note-editor__saved">Autosaved</p>
         {mediaError ? (
           <p className="note-editor__error" role="alert">
             {mediaError}
@@ -733,9 +714,6 @@ export function NoteEditor({
       <EditorToolbar
         visible={isWriting}
         boldActive={activeBlock && isTextBlock(activeBlock) ? blockHasMark(activeBlock, 'bold') : false}
-        italicActive={
-          activeBlock && isTextBlock(activeBlock) ? blockHasMark(activeBlock, 'italic') : false
-        }
         bulletActive={activeBlock?.type === 'bullet'}
         checklistActive={activeBlock?.type === 'checklist'}
         canUndo={canUndo}
@@ -743,12 +721,20 @@ export function NoteEditor({
         onChecklist={handleChecklist}
         onBullet={handleBullet}
         onBold={handleBold}
-        onItalic={handleItalic}
         onUndo={handleUndo}
         onRedo={handleRedo}
-        onImage={() => imageInputRef.current?.click()}
-        onAttach={() => attachInputRef.current?.click()}
-        mediaBusy={mediaBusy}
+      />
+
+      <ConvertToTaskSheet
+        open={taskSheetMode !== null}
+        mode={taskSheetMode ?? 'convert'}
+        initial={{
+          dueDate: note.dueDate,
+          reminderEnabled: note.reminderEnabled,
+          reminderTime: note.reminderTime,
+        }}
+        onSave={handleTaskSheetSave}
+        onCancel={() => setTaskSheetMode(null)}
       />
 
       {previewImage
@@ -780,27 +766,6 @@ export function NoteEditor({
           )
         : null}
     </div>
-  )
-}
-
-function PinIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M9 3h6l-.75 5 3.25 3v2H6.5v-2l3.25-3L9 3z"
-        fill={filled ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 13v8"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
   )
 }
 

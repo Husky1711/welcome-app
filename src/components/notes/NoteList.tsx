@@ -54,6 +54,10 @@ export function NoteList({
         const preview = documentPreview(note)
         const isTask = note.kind === 'task'
         const revealed = openSwipeId === note.id
+        const metaLabel =
+          isTask && note.dueDate
+            ? formatDue(note.dueDate)
+            : `Updated ${formatDate(note.updatedAt)}`
 
         return (
           <li key={note.id} className="notes-list__item">
@@ -114,16 +118,14 @@ export function NoteList({
                   <span className="note-card__main">
                     <span className="note-card__title-row">
                       <h3 className="note-card__title">{note.title || 'Untitled'}</h3>
-                      {note.pinned ? <span className="note-card__pin">Pinned</span> : null}
-                      {note.shareWithCoach ? <span className="note-card__pin">Coach</span> : null}
+                      {note.pinned ? (
+                        <span className="note-card__pin-icon" aria-label="Pinned" title="Pinned">
+                          <PinGlyph />
+                        </span>
+                      ) : null}
                     </span>
                     {preview ? <p className="note-card__body">{preview}</p> : null}
-                    <p className="note-card__meta">
-                      {isTask && note.dueDate ? (
-                        <span className="note-card__due">{formatDue(note.dueDate)}</span>
-                      ) : null}
-                      {isTask ? <span>Task</span> : <span>Updated {formatDate(note.updatedAt)}</span>}
-                    </p>
+                    <p className="note-card__meta">{metaLabel}</p>
                   </span>
                 </div>
               </button>
@@ -132,5 +134,20 @@ export function NoteList({
         )
       })}
     </ul>
+  )
+}
+
+function PinGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M9 3h6l-.75 5 3.25 3v2H6.5v-2l3.25-3L9 3z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M12 13v8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
   )
 }
