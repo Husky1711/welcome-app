@@ -2,6 +2,7 @@ import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { SplashScreen } from '@capacitor/splash-screen'
+import { BOTTOM_NAV_ROUTES } from './constants/navigation'
 import { ROUTES } from './constants/routes'
 import {
   ensureReminderInfrastructure,
@@ -13,6 +14,25 @@ import { syncStatusBarTheme } from './utils/statusBar'
 import { ensureHabitTargetMigration } from './utils/habitStorage'
 
 let reminderListenerRegistered = false
+
+const AUTH_EXIT_ROUTES = new Set<string>([
+  ROUTES.LOGIN,
+  ROUTES.SIGN_UP,
+  ROUTES.FORGOT_PASSWORD,
+])
+
+const PRIMARY_TAB_ROUTES = new Set<string>(BOTTOM_NAV_ROUTES)
+
+function getAppPath(): string {
+  const raw = window.location.hash.replace(/^#/, '') || ROUTES.LOGIN
+  return raw.split('?')[0] || ROUTES.LOGIN
+}
+
+function goToHash(path: string): void {
+  const next = path.startsWith('/') ? path : `/${path}`
+  if (getAppPath() === next) return
+  window.location.hash = next
+}
 
 function registerReminderListeners(): void {
   if (reminderListenerRegistered || !Capacitor.isNativePlatform()) {
@@ -54,19 +74,28 @@ export async function initializeNativeShell(): Promise<void> {
     }
   })
 
-  CapacitorApp.addListener('backButton', ({ canGoBack }) => {
-    const path = window.location.hash.replace('#', '') || ROUTES.LOGIN
+  CapacitorApp.addListener('backButton', () => {
+    const path = getAppPath()
 
-    if (path === ROUTES.LOGIN) {
+    // Login / auth screens and Home are app roots — leave the app.
+    if (AUTH_EXIT_ROUTES.has(path) || path === ROUTES.WELCOME) {
       void CapacitorApp.exitApp()
       return
     }
 
-    if (canGoBack) {
-      window.history.back()
+    // Other bottom tabs return to Home first (then Home exits).
+    if (PRIMARY_TAB_ROUTES.has(path)) {
+      goToHash(ROUTES.WELCOME)
       return
     }
 
-    window.location.hash = ROUTES.LOGIN
+    // Note editor returns to the notes list.
+    if (path.startsWith(`${ROUTES.NOTES}/`)) {
+      goToHash(ROUTES.NOTES)
+      return
+    }
+
+    // Secondary screens (Notes, Coach, Settings, Profile) → Home.
+    goToHash(ROUTES.WELCOME)
   })
 }

@@ -9,6 +9,7 @@ import { useHabits } from '../hooks/useHabits'
 import {
   cancelHabitReminder,
   getStoredReminderIssue,
+  isExactAlarmGranted,
   openExactAlarmSettings,
   rescheduleAllHabitReminders,
   syncHabitReminder,
@@ -126,6 +127,27 @@ export function HabitsPage() {
     if (storedIssue) {
       setInfo(storedIssue)
       setShowExactAlarmAction(storedIssue.toLowerCase().includes('alarms'))
+    }
+  }, [])
+
+  useEffect(() => {
+    async function refreshExactAlarmBanner() {
+      if (document.visibilityState !== 'visible') return
+      const granted = await isExactAlarmGranted()
+      if (!granted) return
+      setShowExactAlarmAction(false)
+      const storedIssue = getStoredReminderIssue()
+      if (storedIssue?.toLowerCase().includes('alarms')) {
+        setInfo(null)
+      }
+      await rescheduleAllHabitReminders(true)
+    }
+
+    document.addEventListener('visibilitychange', refreshExactAlarmBanner)
+    window.addEventListener('focus', refreshExactAlarmBanner)
+    return () => {
+      document.removeEventListener('visibilitychange', refreshExactAlarmBanner)
+      window.removeEventListener('focus', refreshExactAlarmBanner)
     }
   }, [])
 

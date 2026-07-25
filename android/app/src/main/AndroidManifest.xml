@@ -40,12 +40,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!--
+      USE_EXACT_ALARM is Play-restricted to alarm/calendar apps — keep removed.
+      SCHEDULE_EXACT_ALARM is user-grantable and required for on-time habit/task
+      reminders (Alarms & reminders toggle in system settings).
+    -->
     <uses-permission
         android:name="android.permission.USE_EXACT_ALARM"
         tools:node="remove" />
-    <uses-permission
-        android:name="android.permission.SCHEDULE_EXACT_ALARM"
-        tools:node="remove" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
