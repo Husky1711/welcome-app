@@ -14,6 +14,9 @@ import {
   isMediaBlock,
   isTextBlock,
   setBlockText,
+  toBullet,
+  toChecklist,
+  toParagraph,
   toggleBlockMark,
 } from '../../utils/noteBlocks'
 import {
@@ -34,6 +37,30 @@ interface NoteEditorProps {
   onRequestConvertToHabit?: () => void
 }
 
+interface EditorSnapshot {
+  title: string
+  blocks: NoteBlock[]
+}
+
+const HISTORY_LIMIT = 60
+
+function cloneBlocks(blocks: NoteBlock[]): NoteBlock[] {
+  return structuredClone(blocks)
+}
+
+function todayIsoDate(): string {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
+}
+
+function blockPlaceholder(type: NoteBlock['type']): string {
+  if (type === 'checklist') return 'To-do'
+  if (type === 'bullet') return 'List item'
+  return 'Start writing…'
+}
+
 export function NoteEditor({
   note,
   onChange,
@@ -50,9 +77,17 @@ export function NoteEditor({
   const [mediaError, setMediaError] = useState<string | null>(null)
   const [mediaUrls, setMediaUrls] = useState<Record<string, string>>({})
   const [previewImage, setPreviewImage] = useState<{ src: string; name: string } | null>(null)
+  const [canUndo, setCanUndo] = useState(false)
+  const [canRedo, setCanRedo] = useState(false)
   const skipNextSync = useRef(false)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const attachInputRef = useRef<HTMLInputElement>(null)
+  const focusBlockIdRef = useRef<string | null>(null)
+  const historyRef = useRef<EditorSnapshot[]>([
+    { title: note.title, blocks: cloneBlocks(note.blocks) },
+  ])
+  const historyIndexRef = useRef(0)
+  const applyingHistoryRef = useRef(false)
 
   useEffect(() => {
     if (skipNextSync.current) {
@@ -64,8 +99,32 @@ export function NoteEditor({
   }, [note.id, note.title, note.blocks, note.updatedAt])
 
   useEffect(() => {
+    historyRef.current = [{ title: note.title, blocks: cloneBlocks(note.blocks) }]
+    historyIndexRef.current = 0
+    setCanUndo(false)
+    setCanRedo(false)
+    setActiveBlockId(note.blocks[0]?.id ?? null)
+  }, [note.id])
+
+  useEffect(() => {
     onWritingChange?.(isWriting)
   }, [isWriting, onWritingChange])
+
+  useEffect(() => {
+    const blockId = focusBlockIdRef.current
+    if (!blockId) return
+    focusBlockIdRef.current = null
+    const frame = window.requestAnimationFrame(() => {
+      const element = document.querySelector<HTMLTextAreaElement>(
+        `textarea[data-block-id="${blockId}"]`,
+      )
+      if (!element) return
+      element.focus()
+      const end = element.value.length
+      element.setSelectionRange(end, end)
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [blocks, activeBlockId])
 
   useEffect(() => {
     if (!previewImage) return
@@ -111,16 +170,51 @@ export function NoteEditor({
     [blocks, activeBlockId],
   )
 
-  function commitBlocks(next: NoteBlock[]) {
+  function syncHistoryFlags() {
+    setCanUndo(historyIndexRef.current > 0)
+    setCanRedo(historyIndexRef.current < historyRef.current.length - 1)
+  }
+
+  function pushHistory(nextTitle: string, nextBlocks: NoteBlock[]) {
+    if (applyingHistoryRef.current) return
+    const stack = historyRef.current.slice(0, historyIndexRef.current + 1)
+    const last = stack[stack.length - 1]
+    if (
+      last &&
+      last.title === nextTitle &&
+      JSON.stringify(last.blocks) === JSON.stringify(nextBlocks)
+    ) {
+      return
+    }
+    stack.push({ title: nextTitle, blocks: cloneBlocks(nextBlocks) })
+    if (stack.length > HISTORY_LIMIT) {
+      stack.shift()
+    }
+    historyRef.current = stack
+    historyIndexRef.current = stack.length - 1
+    syncHistoryFlags()
+  }
+
+  function commitBlocks(next: NoteBlock[], options?: { focusId?: string | null }) {
+    const ensured = next.length > 0 ? next : [emptyParagraph()]
     skipNextSync.current = true
-    setBlocks(next)
-    onChange({ blocks: next })
+    setBlocks(ensured)
+    onChange({ blocks: ensured })
+    pushHistory(title, ensured)
+    if (options && 'focusId' in options) {
+      const focusId = options.focusId
+      if (focusId) {
+        focusBlockIdRef.current = focusId
+        setActiveBlockId(focusId)
+      }
+    }
   }
 
   function commitTitle(nextTitle: string) {
     skipNextSync.current = true
     setTitle(nextTitle)
     onChange({ title: nextTitle })
+    pushHistory(nextTitle, blocks)
   }
 
   function updateBlock(blockId: string, updater: (block: NoteBlock) => NoteBlock) {
@@ -129,23 +223,46 @@ export function NoteEditor({
 
   function insertBlockAfter(blockId: string | null, block: NoteBlock) {
     if (!blockId) {
-      commitBlocks([...blocks, block])
-      setActiveBlockId(block.id)
+      commitBlocks([...blocks, block], { focusId: block.id })
       return
     }
     const index = blocks.findIndex((entry) => entry.id === blockId)
     if (index === -1) {
-      commitBlocks([...blocks, block])
-      setActiveBlockId(block.id)
+      commitBlocks([...blocks, block], { focusId: block.id })
       return
     }
     const next = [...blocks.slice(0, index + 1), block, ...blocks.slice(index + 1)]
-    commitBlocks(next)
-    setActiveBlockId(block.id)
+    commitBlocks(next, { focusId: block.id })
+  }
+
+  function replaceActiveTextBlock(transform: (block: NoteBlock) => NoteBlock) {
+    const targetId = activeBlockId ?? blocks[blocks.length - 1]?.id
+    if (!targetId) return null
+    const current = blocks.find((block) => block.id === targetId)
+    if (!current || !isTextBlock(current)) return null
+    commitBlocks(
+      blocks.map((block) => (block.id === targetId ? transform(block) : block)),
+      { focusId: targetId },
+    )
+    return targetId
   }
 
   function handleChecklist() {
-    insertBlockAfter(activeBlockId ?? blocks[blocks.length - 1]?.id ?? null, emptyChecklist())
+    const targetId = activeBlockId ?? blocks[blocks.length - 1]?.id
+    if (!targetId) {
+      insertBlockAfter(null, emptyChecklist())
+      return
+    }
+    const current = blocks.find((block) => block.id === targetId)
+    if (current && isTextBlock(current)) {
+      if (current.type === 'checklist') {
+        replaceActiveTextBlock(toParagraph)
+        return
+      }
+      replaceActiveTextBlock((block) => toChecklist(block))
+      return
+    }
+    insertBlockAfter(targetId, emptyChecklist())
   }
 
   function handleBullet() {
@@ -155,12 +272,12 @@ export function NoteEditor({
       return
     }
     const current = blocks.find((block) => block.id === targetId)
-    if (current && isTextBlock(current) && blockToPlainText(current).trim() === '' && current.type !== 'bullet') {
-      updateBlock(targetId, (block) =>
-        isTextBlock(block)
-          ? { id: block.id, type: 'bullet', spans: block.spans }
-          : block,
-      )
+    if (current && isTextBlock(current)) {
+      if (current.type === 'bullet') {
+        replaceActiveTextBlock(toParagraph)
+        return
+      }
+      replaceActiveTextBlock(toBullet)
       return
     }
     insertBlockAfter(targetId, emptyBullet())
@@ -174,6 +291,30 @@ export function NoteEditor({
   function handleItalic() {
     if (!activeBlock || !isTextBlock(activeBlock)) return
     updateBlock(activeBlock.id, (block) => toggleBlockMark(block, 'italic'))
+  }
+
+  function applySnapshot(snapshot: EditorSnapshot) {
+    applyingHistoryRef.current = true
+    skipNextSync.current = true
+    setTitle(snapshot.title)
+    setBlocks(snapshot.blocks)
+    onChange({ title: snapshot.title, blocks: snapshot.blocks })
+    applyingHistoryRef.current = false
+    syncHistoryFlags()
+  }
+
+  function handleUndo() {
+    if (historyIndexRef.current <= 0) return
+    historyIndexRef.current -= 1
+    const snapshot = historyRef.current[historyIndexRef.current]
+    if (snapshot) applySnapshot(snapshot)
+  }
+
+  function handleRedo() {
+    if (historyIndexRef.current >= historyRef.current.length - 1) return
+    historyIndexRef.current += 1
+    const snapshot = historyRef.current[historyIndexRef.current]
+    if (snapshot) applySnapshot(snapshot)
   }
 
   async function handlePickedFile(file: File | undefined, kind: 'image' | 'attachment') {
@@ -227,11 +368,35 @@ export function NoteEditor({
   }
 
   function handleBlockKeyDown(
-    event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: KeyboardEvent<HTMLTextAreaElement>,
     block: NoteBlock,
   ) {
-    if (event.key === 'Enter' && isTextBlock(block)) {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
       event.preventDefault()
+      if (event.shiftKey) handleRedo()
+      else handleUndo()
+      return
+    }
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'y') {
+      event.preventDefault()
+      handleRedo()
+      return
+    }
+
+    if (!isTextBlock(block)) return
+
+    const text = blockToPlainText(block)
+    const isEmpty = text.trim() === ''
+
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      if (isEmpty && (block.type === 'bullet' || block.type === 'checklist')) {
+        commitBlocks(
+          blocks.map((entry) => (entry.id === block.id ? toParagraph(entry) : entry)),
+          { focusId: block.id },
+        )
+        return
+      }
       const next =
         block.type === 'checklist'
           ? emptyChecklist()
@@ -239,6 +404,30 @@ export function NoteEditor({
             ? emptyBullet()
             : emptyParagraph()
       insertBlockAfter(block.id, next)
+      return
+    }
+
+    if (event.key === 'Backspace') {
+      const target = event.currentTarget
+      const atStart = target.selectionStart === 0 && target.selectionEnd === 0
+      if (!atStart) return
+
+      if (block.type === 'bullet' || block.type === 'checklist') {
+        event.preventDefault()
+        commitBlocks(
+          blocks.map((entry) => (entry.id === block.id ? toParagraph(entry) : entry)),
+          { focusId: block.id },
+        )
+        return
+      }
+
+      if (block.type === 'paragraph' && isEmpty && blocks.length > 1) {
+        event.preventDefault()
+        const index = blocks.findIndex((entry) => entry.id === block.id)
+        const next = blocks.filter((entry) => entry.id !== block.id)
+        const focusId = next[Math.max(0, index - 1)]?.id ?? next[0]?.id ?? null
+        commitBlocks(next, { focusId })
+      }
     }
   }
 
@@ -381,14 +570,21 @@ export function NoteEditor({
               <input
                 type="checkbox"
                 checked={note.reminderEnabled}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const enabled = event.target.checked
+                  if (enabled && !note.dueDate) {
+                    onChange({
+                      reminderEnabled: true,
+                      dueDate: todayIsoDate(),
+                      reminderTime: note.reminderTime ?? '09:00',
+                    })
+                    return
+                  }
                   onChange({
-                    reminderEnabled: event.target.checked,
-                    reminderTime: event.target.checked
-                      ? note.reminderTime ?? '09:00'
-                      : note.reminderTime,
+                    reminderEnabled: enabled,
+                    reminderTime: enabled ? note.reminderTime ?? '09:00' : note.reminderTime,
                   })
-                }
+                }}
               />
               <span>Remind me</span>
             </label>
@@ -493,11 +689,12 @@ export function NoteEditor({
               ) : null}
               {block.type === 'bullet' ? <span className="note-editor__bullet" aria-hidden="true" /> : null}
               <textarea
+                data-block-id={block.id}
                 className={`note-editor__input${bold ? ' is-bold' : ''}${italic ? ' is-italic' : ''}`}
                 value={text}
                 rows={1}
                 aria-label="Note content"
-                placeholder={block.type === 'checklist' ? 'To-do' : 'Start writing…'}
+                placeholder={blockPlaceholder(block.type)}
                 onFocus={() => {
                   setActiveBlockId(block.id)
                   setIsWriting(true)
@@ -525,12 +722,11 @@ export function NoteEditor({
           className="note-editor__add-block"
           onClick={() => {
             const block = { ...emptyParagraph(), id: createBlockId() }
-            commitBlocks([...blocks, block])
-            setActiveBlockId(block.id)
+            commitBlocks([...blocks, block], { focusId: block.id })
             setIsWriting(true)
           }}
         >
-          + Add block
+          + Add line
         </button>
       </div>
 
@@ -540,10 +736,16 @@ export function NoteEditor({
         italicActive={
           activeBlock && isTextBlock(activeBlock) ? blockHasMark(activeBlock, 'italic') : false
         }
+        bulletActive={activeBlock?.type === 'bullet'}
+        checklistActive={activeBlock?.type === 'checklist'}
+        canUndo={canUndo}
+        canRedo={canRedo}
         onChecklist={handleChecklist}
         onBullet={handleBullet}
         onBold={handleBold}
         onItalic={handleItalic}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
         onImage={() => imageInputRef.current?.click()}
         onAttach={() => attachInputRef.current?.click()}
         mediaBusy={mediaBusy}
@@ -585,19 +787,18 @@ function PinIcon({ filled }: { filled: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M12 21s6.5-5.2 6.5-11a6.5 6.5 0 10-13 0c0 5.8 6.5 11 6.5 11z"
+        d="M9 3h6l-.75 5 3.25 3v2H6.5v-2l3.25-3L9 3z"
         fill={filled ? 'currentColor' : 'none'}
         stroke="currentColor"
         strokeWidth="1.8"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle
-        cx="12"
-        cy="10"
-        r="2.2"
-        fill={filled ? '#ffffff' : 'none'}
+      <path
+        d="M12 13v8"
         stroke="currentColor"
         strokeWidth="1.8"
+        strokeLinecap="round"
       />
     </svg>
   )

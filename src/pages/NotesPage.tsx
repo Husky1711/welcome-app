@@ -70,30 +70,41 @@ export function NotesPage() {
           />
         </label>
 
-        <div className="notes-filters" role="tablist" aria-label="Filter notes">
-          {FILTERS.map((entry) => (
-            <button
-              key={entry.id}
-              type="button"
-              role="tab"
-              aria-selected={filter === entry.id}
-              className={`notes-filters__chip${filter === entry.id ? ' is-active' : ''}`}
-              onClick={() => setFilter(entry.id)}
-            >
-              {entry.label}
-            </button>
-          ))}
-        </div>
+        <div className="notes-toolbar">
+          <div className="notes-filters" role="tablist" aria-label="Filter notes">
+            {FILTERS.map((entry) => (
+              <button
+                key={entry.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === entry.id}
+                className={`notes-filters__chip${filter === entry.id ? ' is-active' : ''}`}
+                onClick={() => setFilter(entry.id)}
+              >
+                {entry.label}
+              </button>
+            ))}
+          </div>
 
-        <button type="button" className="app-btn-primary notes-page__add" onClick={handleAdd}>
-          <span className="notes-page__add-icon" aria-hidden="true">
-            +
-          </span>
-          Add new
-        </button>
+          <button type="button" className="notes-page__add" onClick={handleAdd} aria-label="Add new">
+            <span className="notes-page__add-icon" aria-hidden="true">
+              +
+            </span>
+            New
+          </button>
+        </div>
 
         <NoteList
           notes={visibleNotes}
+          emptyMessage={
+            filter === 'pinned'
+              ? 'No pinned notes yet.'
+              : filter === 'tasks'
+                ? 'No tasks yet. Create one with + New.'
+                : filter === 'notes'
+                  ? 'No notes yet. Create one with + New.'
+                  : 'No notes yet. Create your first private note.'
+          }
           onOpen={(note) => navigate(`${ROUTES.NOTES}/${note.id}`)}
           onToggleTaskComplete={(note) => {
             const saved = saveNote(note.id, { completed: !note.completed })

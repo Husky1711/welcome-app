@@ -84,6 +84,22 @@ export function isTextBlock(
   return block.type === 'paragraph' || block.type === 'bullet' || block.type === 'checklist'
 }
 
+export function toParagraph(block: NoteBlock): NoteBlock {
+  if (!isTextBlock(block)) return block
+  return { id: block.id, type: 'paragraph', spans: block.spans }
+}
+
+export function toBullet(block: NoteBlock): NoteBlock {
+  if (!isTextBlock(block)) return block
+  return { id: block.id, type: 'bullet', spans: block.spans }
+}
+
+export function toChecklist(block: NoteBlock, checked = false): NoteBlock {
+  if (!isTextBlock(block)) return block
+  const alreadyChecked = block.type === 'checklist' ? block.checked : checked
+  return { id: block.id, type: 'checklist', checked: alreadyChecked, spans: block.spans }
+}
+
 export function isMediaBlock(
   block: NoteBlock,
 ): block is Extract<NoteBlock, { type: 'image' | 'attachment' }> {

@@ -5,6 +5,9 @@ import {
   emptyChecklist,
   emptyParagraph,
   setBlockText,
+  toBullet,
+  toChecklist,
+  toParagraph,
   toggleBlockMark,
 } from './noteBlocks'
 
@@ -30,5 +33,14 @@ describe('noteBlocks', () => {
     })
     expect(preview).toContain('Done item')
     expect(preview).toContain('More detail')
+  })
+
+  it('converts block types while keeping text', () => {
+    const paragraph = setBlockText(emptyParagraph(), 'Milk')
+    const bullet = toBullet(paragraph)
+    expect(bullet.type).toBe('bullet')
+    expect(blockHasMark(bullet, 'bold')).toBe(false)
+    expect(toParagraph(bullet).type).toBe('paragraph')
+    expect(toChecklist(bullet).type).toBe('checklist')
   })
 })

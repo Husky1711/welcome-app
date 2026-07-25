@@ -7,6 +7,7 @@ interface NoteListProps {
   onOpen: (note: NoteDocument) => void
   onToggleTaskComplete?: (note: NoteDocument) => void
   onDelete?: (note: NoteDocument) => void
+  emptyMessage?: string
 }
 
 function formatDate(iso: string): string {
@@ -29,14 +30,20 @@ function formatDue(dueDate: string): string {
   return `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
 }
 
-export function NoteList({ notes, onOpen, onToggleTaskComplete, onDelete }: NoteListProps) {
+export function NoteList({
+  notes,
+  onOpen,
+  onToggleTaskComplete,
+  onDelete,
+  emptyMessage = 'No notes yet. Create your first private note.',
+}: NoteListProps) {
   const [openSwipeId, setOpenSwipeId] = useState<string | null>(null)
   const startX = useRef(0)
 
   if (notes.length === 0) {
     return (
       <div className="note-empty">
-        <p>No notes yet. Create your first private note.</p>
+        <p>{emptyMessage}</p>
       </div>
     )
   }
