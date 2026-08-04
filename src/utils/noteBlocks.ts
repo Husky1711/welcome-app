@@ -48,6 +48,49 @@ export function documentPreview(doc: Pick<NoteDocument, 'blocks'>, maxLength = 1
   return `${text.slice(0, maxLength - 1).trimEnd()}…`
 }
 
+export interface NoteCardText {
+  title: string
+  preview: string
+  isUntitled: boolean
+}
+
+/**
+ * Produces scannable card copy without changing the stored note. When a user
+ * skips the optional title, the first body line becomes the visual title and
+ * is removed from the preview so the card never repeats itself.
+ */
+export function noteCardText(
+  doc: Pick<NoteDocument, 'title' | 'blocks'>,
+  maxPreviewLength = 120,
+): NoteCardText {
+  const storedTitle = doc.title.trim()
+  if (storedTitle) {
+    return {
+      title: storedTitle,
+      preview: documentPreview(doc, maxPreviewLength),
+      isUntitled: false,
+    }
+  }
+
+  const lines = documentToPlainText(doc)
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+
+  const [firstLine, ...remainingLines] = lines
+  if (!firstLine) {
+    return { title: 'Untitled', preview: '', isUntitled: true }
+  }
+
+  const remainingText = remainingLines.join(' ')
+  const preview =
+    remainingText.length <= maxPreviewLength
+      ? remainingText
+      : `${remainingText.slice(0, maxPreviewLength - 1).trimEnd()}…`
+
+  return { title: firstLine, preview, isUntitled: false }
+}
+
 export function setBlockText(block: NoteBlock, text: string): NoteBlock {
   if (block.type === 'image' || block.type === 'attachment') return block
   const existingMarks = block.spans[0]?.marks

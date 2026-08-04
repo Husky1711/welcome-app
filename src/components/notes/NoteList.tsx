@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import type { NoteDocument } from '../../types/note'
-import { documentPreview } from '../../utils/noteBlocks'
+import { noteCardText } from '../../utils/noteBlocks'
 
 interface NoteListProps {
   notes: NoteDocument[]
@@ -51,7 +51,7 @@ export function NoteList({
   return (
     <ul className="notes-list">
       {notes.map((note) => {
-        const preview = documentPreview(note)
+        const cardText = noteCardText(note)
         const isTask = note.kind === 'task'
         const revealed = openSwipeId === note.id
         const metaLabel =
@@ -65,7 +65,7 @@ export function NoteList({
               <button
                 type="button"
                 className="note-swipe__delete"
-                aria-label={`Delete ${note.title || 'untitled note'}`}
+                aria-label={`Delete ${cardText.title}`}
                 onClick={() => onDelete?.(note)}
               >
                 Delete
@@ -89,7 +89,7 @@ export function NoteList({
                   if (delta < -56) setOpenSwipeId(note.id)
                   if (delta > 56) setOpenSwipeId(null)
                 }}
-                aria-label={`Open ${note.title || 'untitled note'}`}
+                aria-label={`Open ${cardText.title}`}
               >
                 <div className="note-card__row">
                   {isTask ? (
@@ -117,14 +117,22 @@ export function NoteList({
 
                   <span className="note-card__main">
                     <span className="note-card__title-row">
-                      <h3 className="note-card__title">{note.title || 'Untitled'}</h3>
+                      <h3
+                        className={`note-card__title${
+                          cardText.isUntitled ? ' note-card__title--placeholder' : ''
+                        }`}
+                      >
+                        {cardText.title}
+                      </h3>
                       {note.pinned ? (
                         <span className="note-card__pin-icon" aria-label="Pinned" title="Pinned">
                           <PinGlyph />
                         </span>
                       ) : null}
                     </span>
-                    {preview ? <p className="note-card__body">{preview}</p> : null}
+                    {cardText.preview ? (
+                      <p className="note-card__body">{cardText.preview}</p>
+                    ) : null}
                     <p className="note-card__meta">{metaLabel}</p>
                   </span>
                 </div>

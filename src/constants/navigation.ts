@@ -19,6 +19,7 @@ export const BOTTOM_NAV_ROUTES: readonly string[] = BOTTOM_NAV_TABS.map((tab) =>
 export const SECONDARY_APP_ROUTES: readonly string[] = [
   ROUTES.NOTES,
   ROUTES.COACH,
+  ROUTES.COMPANION,
   ROUTES.PROFILE,
   ROUTES.SETTINGS,
 ]

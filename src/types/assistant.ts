@@ -19,6 +19,11 @@ export interface AssistantHabitSnapshot {
   completedToday: number
   completionsSinceLearning: number
   daysActiveSinceLearning: number
+  reminderEnabled: boolean
+  /** HH:MM (24h) when reminderEnabled; null otherwise */
+  reminderTime: string | null
+  /** Human label e.g. "1:26 PM" for Leafu replies */
+  reminderTimeLabel: string | null
 }
 
 export interface AssistantContextPayload {
@@ -26,18 +31,33 @@ export interface AssistantContextPayload {
   today: string
   habitCount: number
   habits: AssistantHabitSnapshot[]
+  /** Habit titles not yet completed for today (gentle nudge list). */
+  incompleteToday: string[]
   sharedNoteTitles: string[]
+}
+
+export interface AssistantHistoryTurn {
+  role: 'user' | 'assistant'
+  text: string
 }
 
 export interface AssistantChatRequest {
   message: string
   context: AssistantContextPayload
+  /** Recent conversation turns (oldest → newest), excluding the current message. */
+  history?: AssistantHistoryTurn[]
+  /** Short durable moments the user/companion share (device-owned). */
+  sharedMoments?: string[]
   clientRequestId: string
 }
 
 export interface AssistantChatResponse {
   reply: string
   safetyCategory: AssistantSafetyCategory
+  /** Soft emotion label for future Rive (e.g. proud, calm, cheeky). */
+  emotion?: string
+  /** Animation hint for future Rive (e.g. thumbs_up, wave). */
+  animation?: string
   usageRemainingToday?: number
 }
 

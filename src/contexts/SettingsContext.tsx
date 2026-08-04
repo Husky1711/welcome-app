@@ -12,6 +12,7 @@ import {
   applySettingsToDocument,
   getStoredSettings,
   setStoredAppColor,
+  setStoredCompanionEnabled,
   setStoredTheme,
 } from '../utils/settingsStorage'
 import { syncStatusBarTheme } from '../utils/statusBar'
@@ -21,6 +22,7 @@ interface SettingsContextValue {
   setTheme: (theme: ThemeMode) => void
   setAppColor: (appColor: AppColor) => void
   toggleTheme: () => void
+  toggleCompanion: () => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null)
@@ -47,9 +49,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setTheme(settings.theme === 'dark' ? 'light' : 'dark')
   }, [settings.theme, setTheme])
 
+  const toggleCompanion = useCallback(() => {
+    setSettings(setStoredCompanionEnabled(!settings.companionEnabled))
+  }, [settings.companionEnabled])
+
   const value = useMemo(
-    () => ({ settings, setTheme, setAppColor, toggleTheme }),
-    [settings, setTheme, setAppColor, toggleTheme],
+    () => ({ settings, setTheme, setAppColor, toggleTheme, toggleCompanion }),
+    [settings, setTheme, setAppColor, toggleTheme, toggleCompanion],
   )
 
   return (

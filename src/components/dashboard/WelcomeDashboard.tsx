@@ -122,13 +122,13 @@ export function WelcomeDashboard() {
           </span>
         </Link>
 
-        <Link to={ROUTES.COACH} className="welcome-dashboard__notes" aria-label="Welcome Coach">
+        <Link to={ROUTES.COMPANION} className="welcome-dashboard__notes" aria-label="Talk to Leafu">
           <span className="welcome-dashboard__notes-icon" aria-hidden="true">
             <CoachFeatureIcon />
           </span>
           <span className="welcome-dashboard__notes-copy">
-            <span className="welcome-dashboard__notes-title">Welcome Coach</span>
-            <span className="welcome-dashboard__notes-meta">Habit partner · approved memories stay on device</span>
+            <span className="welcome-dashboard__notes-title">Talk to Leafu</span>
+            <span className="welcome-dashboard__notes-meta">Habit companion · Shared Moments on device</span>
           </span>
           <span className="welcome-dashboard__notes-chevron" aria-hidden="true">
             <ChevronRightIcon />

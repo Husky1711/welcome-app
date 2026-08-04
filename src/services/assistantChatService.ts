@@ -68,20 +68,20 @@ export async function sendAssistantChat(
         : ''
 
     if (code.includes('unauthenticated')) {
-      throw new AssistantServiceError('Sign in with Firebase to use Coach.', 'UNAUTHENTICATED')
+      throw new AssistantServiceError('Sign in with Firebase to use Leafu.', 'UNAUTHENTICATED')
     }
     if (code.includes('resource-exhausted')) {
-      throw new AssistantServiceError('Daily Coach limit reached. Try again tomorrow.', 'QUOTA')
+      throw new AssistantServiceError('Daily Leafu limit reached. Try again tomorrow.', 'QUOTA')
     }
     if (code.includes('unavailable') || code.includes('not-found') || code.includes('failed-precondition')) {
       throw new AssistantServiceError(
-        'Coach backend is not available yet. Deploy the assistant function to enable replies.',
+        'Leafu backend is not available yet. Deploy the assistant function to enable replies.',
         'UNAVAILABLE',
       )
     }
 
     throw new AssistantServiceError(
-      error instanceof Error ? error.message : 'Could not reach Coach.',
+      error instanceof Error ? error.message : 'Could not reach Leafu.',
       'UNKNOWN',
     )
   }

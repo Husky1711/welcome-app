@@ -9,6 +9,7 @@ export const ROUTES = {
   NOTES: '/notes',
   NOTE_EDITOR: '/notes/:noteId',
   COACH: '/coach',
+  COMPANION: '/companion',
   PROFILE: '/profile',
   SETTINGS: '/settings',
 } as const

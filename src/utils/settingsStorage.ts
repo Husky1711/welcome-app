@@ -5,6 +5,9 @@ import type { AppColor, AppSettings, ThemeMode } from '../types/settings'
 const DEFAULT_SETTINGS: AppSettings = {
   theme: 'light',
   appColor: DEFAULT_APP_COLOR,
+  // Off until real artwork ships (docs/COMPANION_*.md character platform).
+  // Roaming/no-go logic is complete; only the character asset is placeholder.
+  companionEnabled: false,
 }
 
 export function getStoredSettings(): AppSettings {
@@ -20,6 +23,10 @@ export function getStoredSettings(): AppSettings {
     return {
       theme: parsed.theme,
       appColor: isAppColor(parsed.appColor) ? parsed.appColor : DEFAULT_APP_COLOR,
+      companionEnabled:
+        typeof parsed.companionEnabled === 'boolean'
+          ? parsed.companionEnabled
+          : DEFAULT_SETTINGS.companionEnabled,
     }
   } catch {
     return DEFAULT_SETTINGS
@@ -34,6 +41,12 @@ export function setStoredTheme(theme: ThemeMode): AppSettings {
 
 export function setStoredAppColor(appColor: AppColor): AppSettings {
   const settings: AppSettings = { ...getStoredSettings(), appColor }
+  localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings))
+  return settings
+}
+
+export function setStoredCompanionEnabled(companionEnabled: boolean): AppSettings {
+  const settings: AppSettings = { ...getStoredSettings(), companionEnabled }
   localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings))
   return settings
 }

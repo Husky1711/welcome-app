@@ -26,6 +26,26 @@ export function SettingsSunIcon({ className = '' }: IconProps) {
   )
 }
 
+export function SettingsSproutIcon({ className = '' }: IconProps) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <path d="M12 21v-8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M12 13C8.7 13 6 10.3 6 7c3.3 0 6 2.7 6 6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 13c3.3 0 6-2.7 6-6-3.3 0-6 2.7-6 6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function SettingsMailIcon({ className = '' }: IconProps) {
   return (
     <svg width={20} height={20} viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>

@@ -48,6 +48,42 @@ describe('assistant foundation', () => {
 
     expect(context.habits[0]?.completionsSinceLearning).toBe(1)
     expect(context.habits[0]?.completedToday).toBe(1)
+    expect(context.incompleteToday).toEqual([])
+  })
+
+  it('lists incomplete habits for today', () => {
+    const walk = addHabit({ title: 'Walk', icon: '🏃' })
+    addHabit({ title: 'Water', icon: '💧' })
+    setHabitCompleted(walk.id, '2026-07-25', true)
+
+    const context = buildAssistantContext({
+      learningStartedAt: '2026-07-24T12:00:00.000Z',
+      email: 'a@example.com',
+      today: '2026-07-25',
+    })
+
+    expect(context.incompleteToday).toContain('Water')
+    expect(context.incompleteToday).not.toContain('Walk')
+  })
+
+  it('includes reminder time in habit snapshot', () => {
+    const habit = addHabit({
+      title: 'Gym',
+      icon: '💪',
+      reminderEnabled: true,
+      reminderTime: '13:26',
+    })
+
+    const context = buildAssistantContext({
+      learningStartedAt: '2026-07-24T12:00:00.000Z',
+      email: 'a@example.com',
+      today: '2026-07-25',
+    })
+
+    const gym = context.habits.find((entry) => entry.id === habit.id)
+    expect(gym?.reminderEnabled).toBe(true)
+    expect(gym?.reminderTime).toBe('13:26')
+    expect(gym?.reminderTimeLabel).toBe('1:26 PM')
   })
 
   it('classifies safety phrases locally', () => {

@@ -13,6 +13,19 @@ async function login(page: Page) {
   await expect(page.getByRole('heading', { name: /Welcome,/i })).toBeVisible()
 }
 
+/** Scoped so it does not also match the companion switch. */
+function themeToggle(page: Page) {
+  return page.locator('label.settings-toggle', {
+    has: page.locator('input[aria-label$="mode"]'),
+  })
+}
+
+function companionToggle(page: Page) {
+  return page.locator('label.settings-toggle', {
+    has: page.locator('input[aria-label$="companion"]'),
+  })
+}
+
 async function clearAppStorage(page: Page) {
   await page.goto('/#/')
   await page.evaluate(() => localStorage.clear())
@@ -243,20 +256,31 @@ test.describe('Senior QA — Settings & Data', () => {
   test('theme toggle switches light and dark', async ({ page }) => {
     await expect(page.getByText('Light mode')).toBeVisible()
 
-    await page.locator('label.settings-toggle').click()
+    await themeToggle(page).click()
     await expect(page.getByText('Dark mode')).toBeVisible()
     await expect(page.locator('html')).toHaveClass(/dark/)
 
-    await page.locator('label.settings-toggle').click()
+    await themeToggle(page).click()
     await expect(page.getByText('Light mode')).toBeVisible()
   })
 
   test('theme preference persists after reload', async ({ page }) => {
-    await page.locator('label.settings-toggle').click()
+    await themeToggle(page).click()
     await page.reload()
 
     await expect(page.getByText('Dark mode')).toBeVisible()
     await expect(page.locator('html')).toHaveClass(/dark/)
+  })
+
+  test('companion is off by default and the preference survives reload', async ({ page }) => {
+    await expect(page.getByText('Off')).toBeVisible()
+    await expect(page.locator('.companion-stage[data-active="true"]')).toHaveCount(0)
+
+    await companionToggle(page).click()
+    await expect(page.getByText('Preview — placeholder artwork')).toBeVisible()
+
+    await page.reload()
+    await expect(page.getByText('Preview — placeholder artwork')).toBeVisible()
   })
 
   test('privacy policy link is present and valid', async ({ page }) => {

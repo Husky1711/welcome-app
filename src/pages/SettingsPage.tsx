@@ -8,6 +8,7 @@ import {
   SettingsInfoIcon,
   SettingsLogOutIcon,
   SettingsShieldIcon,
+  SettingsSproutIcon,
   SettingsStarIcon,
   SettingsSunIcon,
   SettingsTrashIcon,
@@ -17,7 +18,7 @@ import { APP_INFO } from '../constants/auth'
 import { ROUTES } from '../constants/routes'
 import { useSettings } from '../contexts/SettingsContext'
 import { useAuth } from '../hooks/useAuth'
-import { clearAllAppData } from '../utils/clearAppData'
+import { clearAllAppData, clearLeafuData } from '../utils/clearAppData'
 import { AppLayout } from '../layouts/AppLayout'
 import signInLogo from '../assets/sign-in-logo.png'
 import '../styles/settings-page.css'
@@ -29,10 +30,12 @@ const FEEDBACK_MAILTO = `mailto:${APP_INFO.contactEmail}?subject=${encodeURIComp
 export function SettingsPage() {
   const navigate = useNavigate()
   const { logout } = useAuth()
-  const { settings, setAppColor, toggleTheme } = useSettings()
+  const { settings, setAppColor, toggleTheme, toggleCompanion } = useSettings()
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [showClearLeafuConfirm, setShowClearLeafuConfirm] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
+  const [isClearingLeafu, setIsClearingLeafu] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const isDark = settings.theme === 'dark'
@@ -49,6 +52,16 @@ export function SettingsPage() {
     } finally {
       setIsClearing(false)
       setShowClearConfirm(false)
+    }
+  }
+
+  function handleClearLeafuData() {
+    setIsClearingLeafu(true)
+    try {
+      clearLeafuData()
+    } finally {
+      setIsClearingLeafu(false)
+      setShowClearLeafuConfirm(false)
     }
   }
 
@@ -155,6 +168,35 @@ export function SettingsPage() {
           </div>
 
           <div className="settings-panel__row">
+            <div className="settings-panel__row-main">
+              <SettingsSproutIcon className="settings-panel__icon" />
+              <div className="settings-panel__copy">
+                <span className="settings-panel__label">Companion</span>
+                <span className="settings-panel__value">
+                  {settings.companionEnabled
+                    ? 'Preview — placeholder artwork'
+                    : 'Off'}
+                </span>
+              </div>
+            </div>
+            <label className="settings-toggle">
+              <input
+                type="checkbox"
+                role="switch"
+                className="settings-toggle__input"
+                checked={settings.companionEnabled}
+                onChange={toggleCompanion}
+                aria-label={
+                  settings.companionEnabled ? 'Hide the companion' : 'Show the companion'
+                }
+              />
+              <span className="settings-toggle__track" aria-hidden="true">
+                <span className="settings-toggle__thumb" />
+              </span>
+            </label>
+          </div>
+
+          <div className="settings-panel__row">
             <a
               href={APP_INFO.playStoreUrl}
               target="_blank"
@@ -218,6 +260,22 @@ export function SettingsPage() {
             <button
               type="button"
               className="settings-panel__link-row settings-panel__link-row--warning"
+              onClick={() => setShowClearLeafuConfirm(true)}
+            >
+              <div className="settings-panel__row-main">
+                <SettingsTrashIcon className="settings-panel__icon settings-panel__icon--warning" />
+                <span className="settings-panel__label settings-panel__label--inline settings-panel__label--warning">
+                  Clear Leafu data
+                </span>
+              </div>
+              <SettingsChevronIcon className="settings-panel__chevron settings-panel__chevron--warning" />
+            </button>
+          </div>
+
+          <div className="settings-panel__row settings-panel__row--action">
+            <button
+              type="button"
+              className="settings-panel__link-row settings-panel__link-row--warning"
               onClick={() => setShowClearConfirm(true)}
             >
               <div className="settings-panel__row-main">
@@ -266,9 +324,20 @@ export function SettingsPage() {
       />
 
       <ConfirmDialog
+        open={showClearLeafuConfirm}
+        title="Clear Leafu data?"
+        message="This removes Leafu consent, Shared Moments, and preferences on this device. Your habits and notes stay. You will need to enable Leafu again."
+        confirmLabel={isClearingLeafu ? 'Clearing...' : 'Clear Leafu'}
+        destructive
+        confirmDisabled={isClearingLeafu}
+        onConfirm={handleClearLeafuData}
+        onCancel={() => setShowClearLeafuConfirm(false)}
+      />
+
+      <ConfirmDialog
         open={showClearConfirm}
         title="Clear all app data?"
-        message="This will delete your habits, notes, profile session, and settings from this device. You will be signed out."
+        message="This will delete your habits, notes, Leafu data, profile session, and settings from this device. You will be signed out."
         confirmLabel={isClearing ? 'Clearing...' : 'Clear data'}
         destructive
         confirmDisabled={isClearing}
